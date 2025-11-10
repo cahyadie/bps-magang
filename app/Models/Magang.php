@@ -20,6 +20,8 @@ class Magang extends Model
         'tiktok',
         'periode_bulan',
         'status',
+        'kesan',
+        'pesan',
     ];
 
     protected $casts = [

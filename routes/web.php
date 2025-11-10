@@ -17,8 +17,18 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // CRUD Magang
-    Route::resource('magang', MagangController::class);
+    // ✅ ROUTES UNTUK SEMUA USER (Admin & User biasa)
+    Route::get('/magang', [MagangController::class, 'index'])->name('magang.index');
+    Route::get('/magang/create', [MagangController::class, 'create'])->name('magang.create');
+    Route::post('/magang', [MagangController::class, 'store'])->name('magang.store');
+    Route::get('/magang/{magang}', [MagangController::class, 'show'])->name('magang.show');
+
+    // ✅ ROUTES HANYA UNTUK ADMIN (Edit & Delete)
+    Route::middleware('admin')->group(function () {
+        Route::get('/magang/{magang}/edit', [MagangController::class, 'edit'])->name('magang.edit');
+        Route::put('/magang/{magang}', [MagangController::class, 'update'])->name('magang.update');
+        Route::delete('/magang/{magang}', [MagangController::class, 'destroy'])->name('magang.destroy');
+    });
 });
 
 require __DIR__ . '/auth.php';

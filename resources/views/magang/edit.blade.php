@@ -103,7 +103,7 @@
 
 <body>
     <div class="min-h-screen py-8 px-4">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <!-- Header -->
             <div class="mb-8">
                 <a href="{{ route('magang.show', $magang) }}"
@@ -135,7 +135,7 @@
                     <div class="mb-6">
                         <label for="foto" class="claude-label">Foto Profil</label>
 
-                        @if ($magang->foto)
+                        @if($magang->foto)
                             <div class="mb-3">
                                 <img src="{{ asset('storage/' . $magang->foto) }}" alt="Foto saat ini"
                                     class="preview-image">
@@ -251,6 +251,37 @@
                         </div>
                     </div>
 
+                    <!-- SECTION KESAN & PESAN ✅ BARU -->
+                    <div class="border-t border-[#3a3a3a] pt-6 mt-8 mb-6">
+                        <h3 class="text-white text-lg font-semibold mb-4">
+                            <i class="fas fa-comment-dots mr-2"></i>Kesan & Pesan
+                        </h3>
+
+                        <!-- Kesan -->
+                        <div class="mb-6">
+                            <label for="kesan" class="claude-label">Kesan Selama Magang</label>
+                            <textarea name="kesan" id="kesan" rows="5"
+                                class="claude-input @error('kesan') border-red-500 @enderror"
+                                placeholder="Tulis kesan Anda selama mengikuti program magang di BPS Bantul...">{{ old('kesan', $magang->kesan) }}</textarea>
+                            <p class="text-[#7a7a7a] text-xs mt-2">Maksimal 2000 karakter</p>
+                            @error('kesan')
+                                <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Pesan -->
+                        <div class="mb-6">
+                            <label for="pesan" class="claude-label">Pesan & Saran</label>
+                            <textarea name="pesan" id="pesan" rows="5"
+                                class="claude-input @error('pesan') border-red-500 @enderror"
+                                placeholder="Tulis pesan atau saran untuk BPS Bantul...">{{ old('pesan', $magang->pesan) }}</textarea>
+                            <p class="text-[#7a7a7a] text-xs mt-2">Maksimal 2000 karakter</p>
+                            @error('pesan')
+                                <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
                     <!-- Buttons -->
                     <div class="flex gap-3 justify-end pt-4 border-t border-[#3a3a3a]">
                         <a href="{{ route('magang.show', $magang) }}" class="claude-button-secondary">
@@ -272,7 +303,7 @@
 
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
                 }

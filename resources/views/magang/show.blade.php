@@ -271,6 +271,58 @@
             border-radius: 8px;
             margin-bottom: 1.5rem;
         }
+
+        /* ✅ STYLE UNTUK KESAN & PESAN */
+        .kesan-pesan-section {
+            background-color: #242424;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-top: 2rem;
+        }
+
+        .kesan-pesan-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .kesan-pesan-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .kesan-pesan-item {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .kesan-pesan-label {
+            color: #9ca3af;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .kesan-pesan-content {
+            color: #e8e8e8;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .kesan-pesan-empty {
+            color: #7a7a7a;
+            font-style: italic;
+        }
     </style>
 </head>
 
@@ -290,6 +342,7 @@
             <!-- Success Message -->
             @if (session('success'))
                 <div class="success-alert">
+                    <i class="fas fa-check-circle mr-2"></i>
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
@@ -298,7 +351,7 @@
             <div class="detail-card">
                 <!-- Foto Profile -->
                 <div class="text-center mb-8">
-                    @if ($magang->foto)
+                    @if($magang->foto)
                         <img src="{{ asset('storage/' . $magang->foto) }}" alt="{{ $magang->nama }}"
                             style="width: 250px; height: 250px; object-fit: cover; border-radius: 50%; margin: 0 auto; border: 4px solid #3a3a3a; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
                     @else
@@ -368,28 +421,28 @@
                 </div>
 
                 <!-- Social Media Section -->
-                @if ($magang->whatsapp || $magang->instagram || $magang->tiktok)
+                @if($magang->whatsapp || $magang->instagram || $magang->tiktok)
                     <div class="social-media-section">
                         <h3 class="text-white font-semibold text-lg mb-3">
                             <i class="fas fa-share-alt mr-2"></i>Media Sosial
                         </h3>
                         <div class="social-links">
-                            @if ($magang->whatsapp)
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}"
-                                    target="_blank" class="social-link social-whatsapp">
+                            @if($magang->whatsapp)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}" target="_blank"
+                                    class="social-link social-whatsapp">
                                     <i class="fab fa-whatsapp"></i>
                                     <span>WhatsApp</span>
                                 </a>
                             @endif
-                            @if ($magang->instagram)
+                            @if($magang->instagram)
                                 <a href="https://instagram.com/{{ ltrim($magang->instagram, '@') }}" target="_blank"
                                     class="social-link social-instagram">
                                     <i class="fab fa-instagram"></i>
                                     <span>{{ $magang->instagram }}</span>
                                 </a>
                             @endif
-                            @if ($magang->tiktok)
-                                <a href="https://tiktok.com/@{{ ltrim($magang - > tiktok, '@') }}" target="_blank"
+                            @if($magang->tiktok)
+                                <a href="https://tiktok.com/@{{ ltrim($magang->tiktok, '@') }}" target="_blank"
                                     class="social-link social-tiktok">
                                     <i class="fab fa-tiktok"></i>
                                     <span>{{ $magang->tiktok }}</span>
@@ -399,8 +452,46 @@
                     </div>
                 @endif
 
+                <!-- ✅ KESAN & PESAN SECTION - BARU! -->
+                <div class="kesan-pesan-section">
+                    <h3 class="text-white font-semibold text-lg mb-1">
+                        <i class="fas fa-comment-dots mr-2"></i>Kesan & Pesan
+                    </h3>
+                    <div class="kesan-pesan-grid">
+                        <!-- Kesan -->
+                        <div class="kesan-pesan-item">
+                            <div class="kesan-pesan-label">
+                                <i class="fas fa-quote-left"></i>
+                                <span>Kesan</span>
+                            </div>
+                            <div class="kesan-pesan-content">
+                                @if($magang->kesan)
+                                    {!! nl2br(e($magang->kesan)) !!}
+                                @else
+                                    <span class="kesan-pesan-empty">Belum ada kesan</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Pesan -->
+                        <div class="kesan-pesan-item">
+                            <div class="kesan-pesan-label">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Pesan</span>
+                            </div>
+                            <div class="kesan-pesan-content">
+                                @if($magang->pesan)
+                                    {!! nl2br(e($magang->pesan)) !!}
+                                @else
+                                    <span class="kesan-pesan-empty">Belum ada pesan</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Link Karya -->
-                @if ($magang->link_pekerjaan)
+                @if($magang->link_pekerjaan)
                     <div class="karya-section">
                         <h3 class="text-white font-semibold text-lg mb-2">
                             <i class="fas fa-briefcase mr-2"></i>Karya/Pekerjaan

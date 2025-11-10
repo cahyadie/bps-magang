@@ -32,6 +32,8 @@ class MagangController extends Controller
             'whatsapp' => 'nullable|string|max:20',
             'instagram' => 'nullable|string|max:100',
             'tiktok' => 'nullable|string|max:100',
+            'kesan' => 'nullable|string|max:2000',
+            'pesan' => 'nullable|string|max:2000',
         ]);
 
         // Upload foto
@@ -51,11 +53,19 @@ class MagangController extends Controller
 
     public function edit(Magang $magang)
     {
+        // ✅ DOUBLE CHECK (sudah ada di middleware, tapi lebih aman)
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized');
+        }
         return view('magang.edit', compact('magang'));
     }
 
     public function update(Request $request, Magang $magang)
     {
+        // ✅ DOUBLE CHECK
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized');
+        }
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -66,6 +76,8 @@ class MagangController extends Controller
             'whatsapp' => 'nullable|string|max:20',
             'instagram' => 'nullable|string|max:100',
             'tiktok' => 'nullable|string|max:100',
+            'kesan' => 'nullable|string|max:2000',
+            'pesan' => 'nullable|string|max:2000',
         ]);
 
         // Upload foto baru jika ada
@@ -84,13 +96,14 @@ class MagangController extends Controller
 
     public function destroy(Magang $magang)
     {
-        // Hapus foto
+        // ✅ DOUBLE CHECK
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized');
+        }
         if ($magang->foto && Storage::disk('public')->exists($magang->foto)) {
             Storage::disk('public')->delete($magang->foto);
         }
-
         $magang->delete();
-
         return redirect()->route('magang.index')->with('success', 'Data magang berhasil dihapus!');
     }
 }
