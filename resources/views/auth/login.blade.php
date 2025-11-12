@@ -373,8 +373,8 @@
 
     <div class="form-card">
         <div class="text-center mb-8 logo-container">
-            <h1 class="claude-title text-2xl text-white mb-2">Login Admin</h1>
-            <p class="text-sm text-[#9ca3af]">Akses Dashboard BPS Bantul</p>
+            <h1 class="claude-title text-2xl text-white mb-2">Login</h1>
+            <p class="text-sm text-[#9ca3af]">Data Magang BPS Bantul</p>
         </div>
 
         <form method="POST" action="{{ route('login') }}">
@@ -411,10 +411,10 @@
                         Lupa password?
                     </a>
                 @endif
-                <!-- Link to Login -->
+                {{-- <!-- Link to Login -->
                 <a href="{{ route('register') }}" class="link-login">
                     Belum punya akun? <span>Daftar di sini</span>
-                </a>
+                </a> --}}
 
                 <button type="submit" class="claude-button">
                     Log in

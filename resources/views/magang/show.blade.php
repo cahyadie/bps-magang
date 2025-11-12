@@ -11,6 +11,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&display=swap');
 
+        /* ▼▼▼ PERBAIKAN OVERSCROLL ▼▼▼ */
+        html {
+            background-color: #1a1a1a;
+            overscroll-behavior: none;
+        }
+
+        /* ▲▲▲ SELESAI ▲▲▲ */
+
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
@@ -79,10 +87,20 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            /* Mengubah grid agar responsif */
+            grid-template-columns: repeat(1, 1fr);
+            /* Default 1 kolom */
             gap: 1.5rem;
             margin: 2rem 0;
         }
+
+        /* Terapkan 2 kolom hanya di layar medium (md) ke atas */
+        @media (min-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
 
         .info-item {
             background-color: #242424;
@@ -328,8 +346,7 @@
 
 <body>
     <div class="min-h-screen py-8 px-4">
-        <div class="max-w-4xl mx-auto">
-            <!-- Header -->
+        <div class="max-w-7xl mx-auto">
             <div class="mb-8">
                 <a href="{{ route('magang.index') }}"
                     class="text-[#d97757] hover:text-[#e88968] inline-flex items-center gap-2 mb-4">
@@ -339,7 +356,6 @@
                 <h1 class="claude-title text-3xl text-white">Detail Data Magang</h1>
             </div>
 
-            <!-- Success Message -->
             @if (session('success'))
                 <div class="success-alert">
                     <i class="fas fa-check-circle mr-2"></i>
@@ -347,9 +363,7 @@
                 </div>
             @endif
 
-            <!-- Main Detail Card -->
             <div class="detail-card">
-                <!-- Foto Profile -->
                 <div class="text-center mb-8">
                     @if($magang->foto)
                         <img src="{{ asset('storage/' . $magang->foto) }}" alt="{{ $magang->nama }}"
@@ -362,7 +376,6 @@
                     @endif
                 </div>
 
-                <!-- Nama & Status -->
                 <div class="text-center mb-6">
                     <h2 class="text-3xl font-bold text-white mb-3">{{ $magang->nama }}</h2>
                     @php
@@ -387,7 +400,6 @@
                     </div>
                 </div>
 
-                <!-- Info Grid -->
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label">
@@ -420,14 +432,13 @@
                     </div>
                 </div>
 
-                <!-- Social Media Section -->
                 @if($magang->whatsapp || $magang->instagram || $magang->tiktok)
                     <div class="social-media-section">
                         <h3 class="text-white font-semibold text-lg mb-3">
                             <i class="fas fa-share-alt mr-2"></i>Media Sosial
                         </h3>
                         <div class="social-links">
-                            @if($magang->whatsapp)
+                            @if($magang->whatsapp && auth()->check() && auth()->user()->role == 'admin')
                                 <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}" target="_blank"
                                     class="social-link social-whatsapp">
                                     <i class="fab fa-whatsapp"></i>
@@ -452,13 +463,11 @@
                     </div>
                 @endif
 
-                <!-- ✅ KESAN & PESAN SECTION - BARU! -->
                 <div class="kesan-pesan-section">
                     <h3 class="text-white font-semibold text-lg mb-1">
                         <i class="fas fa-comment-dots mr-2"></i>Kesan & Pesan
                     </h3>
                     <div class="kesan-pesan-grid">
-                        <!-- Kesan -->
                         <div class="kesan-pesan-item">
                             <div class="kesan-pesan-label">
                                 <i class="fas fa-quote-left"></i>
@@ -473,7 +482,6 @@
                             </div>
                         </div>
 
-                        <!-- Pesan -->
                         <div class="kesan-pesan-item">
                             <div class="kesan-pesan-label">
                                 <i class="fas fa-paper-plane"></i>
@@ -490,7 +498,6 @@
                     </div>
                 </div>
 
-                <!-- Link Karya -->
                 @if($magang->link_pekerjaan)
                     <div class="karya-section">
                         <h3 class="text-white font-semibold text-lg mb-2">
@@ -503,9 +510,8 @@
                     </div>
                 @endif
 
-                <!-- Timestamps -->
                 <div class="mt-6 pt-6 border-t border-[#3a3a3a]">
-                    <div class="grid grid-cols-2 gap-4 text-sm text-[#7a7a7a]">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-[#7a7a7a]">
                         <div>
                             <i class="fas fa-clock mr-2"></i>Dibuat:
                             {{ $magang->created_at->isoFormat('D MMM YYYY, HH:mm') }}
@@ -517,27 +523,32 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex gap-3 justify-between mt-8 pt-6 border-t border-[#3a3a3a]">
-                    <a href="{{ route('magang.index') }}" class="claude-button-secondary">
+                <div
+                    class="flex flex-col md:flex-row gap-3 justify-between items-center mt-8 pt-6 border-t border-[#3a3a3a]">
+                    <a href="{{ route('magang.index') }}" class="claude-button-secondary w-full md:w-auto">
                         <i class="fas fa-arrow-left"></i>
                         <span>Kembali</span>
                     </a>
-                    <div class="flex gap-3">
-                        <a href="{{ route('magang.edit', $magang) }}" class="claude-button">
-                            <i class="fas fa-edit"></i>
-                            <span>Edit Data</span>
-                        </a>
-                        <form action="{{ route('magang.destroy', $magang) }}" method="POST" class="inline-block"
-                            onsubmit="return confirm('Yakin ingin menghapus data {{ $magang->nama }}?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="claude-button-danger">
-                                <i class="fas fa-trash"></i>
-                                <span>Hapus</span>
-                            </button>
-                        </form>
-                    </div>
+
+                    @if(auth()->user()->isAdmin())
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                            <a href="{{ route('magang.edit', $magang) }}"
+                                class="claude-button w-full md:w-auto justify-center">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit Data</span>
+                            </a>
+                            <form action="{{ route('magang.destroy', $magang) }}" method="POST"
+                                class="inline-block w-full md:w-auto"
+                                onsubmit="return confirm('Yakin ingin menghapus data {{ $magang->nama }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="claude-button-danger w-full justify-center">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Hapus</span>
+                                </button>
+                            </form>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

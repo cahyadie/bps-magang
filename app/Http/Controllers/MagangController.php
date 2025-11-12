@@ -9,10 +9,24 @@ use Illuminate\Support\Facades\Storage;
 
 class MagangController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $magangs = Magang::latest()->paginate(12);
-        return view('magang.index', compact('magangs'));
+        $query = Magang::query();
+        // ✅ FILTER SEARCH (Nama)
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+        // ✅ FILTER BY UNIVERSITAS
+        if ($request->filled('kampus')) {
+            $query->where('asal_kampus', $request->kampus);
+        }
+        // ✅ Get semua kampus untuk dropdown (unique)
+        $kampusList = Magang::select('asal_kampus')
+            ->distinct()
+            ->orderBy('asal_kampus')
+            ->pluck('asal_kampus');
+        $magangs = $query->orderBy('created_at', 'desc')->paginate(12);
+        return view('magang.index', compact('magangs', 'kampusList'));
     }
 
     public function create()
@@ -36,10 +50,22 @@ class MagangController extends Controller
             'pesan' => 'nullable|string|max:2000',
         ]);
 
+
+        $validated['created_by'] = auth()->id();
         // Upload foto
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('foto-magang', 'public');
         }
+        $nameParts = explode(' ', $validated['nama']);
+        $initials = '';
+        foreach ($nameParts as $part) {
+            if (!empty($part)) {
+                $initials .= strtoupper($part[0]);
+                if (strlen($initials) == 2)
+                    break;
+            }
+        }
+        $validated['initials'] = $initials ?: strtoupper(substr($validated['nama'], 0, 2));
 
         Magang::create($validated);
 
