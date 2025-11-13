@@ -1,14 +1,8 @@
 {{-- resources/views/layouts/sidebar.blade.php --}}
 
-{{-- 
-  Lebar sidebar sekarang diatur oleh 'expanded' dari tag <body>
-  :class="expanded ? 'w-64' : 'w-20'"
-  
-  transition-all ditambahkan untuk animasi yang mulus
---}}
 <aside
     :class="expanded ? 'w-64' : 'w-20'"
-    class="flex-shrink-0 bg-[#1a1a1a] border-r border-[#3a3a3a] flex flex-col h-screen fixed top-0 left-0 z-40 transition-all duration-300 ease-in-out">
+    class="flex-shrink-0 bg-[#1a1a1a] border-r border-[#3a3a3a] flex flex-col h-screen fixed top-0 left-0 z-40 transition-all duration-500 ease-in-out">
 
     {{-- HEADER SIDEBAR DENGAN TOMBOL BURGER --}}
     <div class="h-16 flex items-center border-b border-[#3a3a3a] flex-shrink-0 px-4">
@@ -179,3 +173,10 @@
         z-index: 50;
     }
 </style>
+
+{{-- 
+  Script Alpine.js ditempatkan di sini.
+  Karena file ini di-@include di 'app.blade.php' dan 'main.blade.php',
+  script ini akan otomatis termuat di kedua layout tersebut tanpa duplikasi.
+--}}
+<script src="//unpkg.com/alpinejs" defer></script>

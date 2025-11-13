@@ -1274,7 +1274,7 @@
              pl-64 (saat expanded) menjadi pl-20 (saat terlipat)
              Tambahkan juga transisi untuk animasi yang mulus.
         --}}
-        <main class="flex-1 transition-all duration-300 ease-in-out" 
+        <main class="flex-1 transition-all duration-500 ease-in-out" 
               :class="expanded ? 'pl-64' : 'pl-20'">
             
             {{ $slot }}
