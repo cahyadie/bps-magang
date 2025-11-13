@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - BPS Bantul</title>
+    <title>Daftar - BPS Bantul</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -164,7 +164,7 @@
         .input-group:nth-child(2) {
             animation-delay: 0.5s;
         }
-
+        
         .input-group:nth-child(3) {
             animation-delay: 0.6s;
         }
@@ -205,10 +205,10 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: 0.5rem;
             box-shadow: 0 4px 15px rgba(217, 119, 87, 0.3);
-            width: 100%;
+            width: 100%; /* Tombol Penuh */
+            justify-content: center; /* Teks di tengah */
         }
 
         .claude-button:hover {
@@ -223,6 +223,7 @@
 
         .button-container {
             animation: slideInRight 0.6s ease-out 0.8s both;
+            width: 100%;
         }
 
         @keyframes slideInRight {
@@ -242,23 +243,7 @@
             color: #f87171;
             font-size: 0.875rem;
             margin-top: 0.5rem;
-            animation: shake 0.5s ease-in-out;
-        }
-
-        @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            75% {
-                transform: translateX(10px);
-            }
+            /* Animasi shake bisa ditambahkan jika diperlukan */
         }
 
         /* Link Styles */
@@ -293,10 +278,6 @@
             .claude-title {
                 font-size: 1.5rem;
             }
-
-            .claude-button {
-                padding: 0.75rem 1.5rem;
-            }
         }
 
         @media (max-width: 400px) {
@@ -322,13 +303,6 @@
         .claude-button:hover i {
             transform: translateX(3px);
         }
-
-        /* Input Icon */
-        .input-icon {
-            color: #6a6a6a;
-            font-size: 0.875rem;
-            margin-right: 0.5rem;
-        }
     </style>
 </head>
 
@@ -340,8 +314,8 @@
 
     <div class="form-card">
         <div class="text-center mb-8 logo-container">
-            <h1 class="claude-title text-2xl text-white mb-2">Daftar Akun</h1>
-            <p class="text-sm text-[#9ca3af]">Buat akun baru untuk akses Dashboard BPS Bantul</p>
+            <h1 class="claude-title text-2xl text-white mb-2">Buat Akun Baru</h1>
+            <p class="text-sm text-[#9ca3af]">Data Magang BPS Bantul</p>
         </div>
 
         <form method="POST" action="{{ route('register') }}">
@@ -349,23 +323,19 @@
 
             <!-- Name -->
             <div class="mb-5 input-group">
-                <label for="name" class="claude-label">
-                    <i class="fas fa-user input-icon"></i>Nama Lengkap
-                </label>
+                <label for="name" class="claude-label">Nama Lengkap</label>
                 <input id="name" class="claude-input" type="text" name="name" value="{{ old('name') }}" required
-                    autofocus autocomplete="name" placeholder="Masukkan nama lengkap" />
+                    autofocus autocomplete="name" placeholder="Nama Anda" />
                 @error('name')
                     <p class="error-message">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Email -->
+            <!-- Email Address -->
             <div class="mb-5 input-group">
-                <label for="email" class="claude-label">
-                    <i class="fas fa-envelope input-icon"></i>Email
-                </label>
+                <label for="email" class="claude-label">Email</label>
                 <input id="email" class="claude-input" type="email" name="email" value="{{ old('email') }}" required
-                    autocomplete="username" placeholder="contoh@email.com" />
+                    autocomplete="username" placeholder="email@anda.com" />
                 @error('email')
                     <p class="error-message">{{ $message }}</p>
                 @enderror
@@ -373,11 +343,9 @@
 
             <!-- Password -->
             <div class="mb-5 input-group">
-                <label for="password" class="claude-label">
-                    <i class="fas fa-lock input-icon"></i>Password
-                </label>
+                <label for="password" class="claude-label">Password</label>
                 <input id="password" class="claude-input" type="password" name="password" required
-                    autocomplete="new-password" placeholder="Minimal 8 karakter" />
+                    autocomplete="new-password" placeholder="••••••••" />
                 @error('password')
                     <p class="error-message">{{ $message }}</p>
                 @enderror
@@ -385,22 +353,22 @@
 
             <!-- Confirm Password -->
             <div class="mb-5 input-group">
-                <label for="password_confirmation" class="claude-label">
-                    <i class="fas fa-lock input-icon"></i>Konfirmasi Password
-                </label>
+                <label for="password_confirmation" class="claude-label">Konfirmasi Password</label>
                 <input id="password_confirmation" class="claude-input" type="password" name="password_confirmation"
-                    required autocomplete="new-password" placeholder="Ulangi password" />
+                    required autocomplete="new-password" placeholder="••••••••" />
+                @error('password_confirmation')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
             </div>
 
-            <!-- Submit Button -->
-            <div class="mt-6 button-container">
+
+            <div class="mt-8 button-container">
                 <button type="submit" class="claude-button">
-                    Daftar Sekarang
-                    <i class="fas fa-user-plus"></i>
+                    Daftar
+                    <i class="fas fa-arrow-right"></i>
                 </button>
             </div>
 
-            <!-- Link to Login -->
             <a href="{{ route('login') }}" class="link-login">
                 Sudah punya akun? <span>Login di sini</span>
             </a>

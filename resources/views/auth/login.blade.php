@@ -374,7 +374,7 @@
     <div class="form-card">
         <div class="text-center mb-8 logo-container">
             <h1 class="claude-title text-2xl text-white mb-2">Login</h1>
-            <p class="text-sm text-[#9ca3af]">Data Magang BPS Bantul</p>
+            <p class="text-sm text-[#9ca3af]">Pendaftaran Magang dan data Magang</p>
         </div>
 
         <form method="POST" action="{{ route('login') }}">
