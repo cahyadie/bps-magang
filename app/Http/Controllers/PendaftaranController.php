@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PendaftaranStatusMail;
+use Illuminate\Support\Facades\Auth;
 
 class PendaftaranController extends Controller
 {
@@ -54,6 +55,8 @@ class PendaftaranController extends Controller
 
         // 3. Simpan file Pas Foto (Gambar)
         $validated['pas_foto'] = $request->file('pas_foto')->store('pas_foto', 'public');
+        
+        $requestData['user_id'] = Auth::id();
         
         // 4. Simpan data ke database
         Pendaftaran::create($validated);

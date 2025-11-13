@@ -10,7 +10,9 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SocialiteController;
 
+// Rute untuk user yang BELUM LOGIN
 Route::middleware('guest')->group(function () {
     // Route::get('register', [RegisteredUserController::class, 'create'])
     //     ->name('register');
@@ -33,8 +35,18 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+    
+    // ===========================================
+    // PINDAHKAN KEDUA RUTE INI KE SINI
+    // ===========================================
+    Route::get('/auth/google/redirect', [SocialiteController::class, 'redirect'])
+        ->name('google.redirect');
+
+    Route::get('/auth/google/callback', [SocialiteController::class, 'callback'])
+        ->name('google.callback');
 });
 
+// Rute untuk user yang SUDAH LOGIN
 Route::middleware('auth')->group(function () {
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
@@ -56,4 +68,5 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+        
 });

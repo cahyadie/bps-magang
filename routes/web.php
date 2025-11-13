@@ -12,7 +12,7 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
-// ✅ RUTE KONFIRMASI YANG HILANG ADA DI SINI (PUBLIK)
+// RUTE KONFIRMASI PUBLIK
 Route::get('/konfirmasi/{pendaftaran}', [PendaftaranController::class, 'konfirmasiKehadiran'])
     ->name('daftar.konfirmasi');
 
@@ -29,14 +29,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/pendaftaran-magang', [PendaftaranController::class, 'store'])->name('daftar.store');
 
 
-    // --- GRUP RUTE DATA MAGANG (ADMIN) ---
+    // --- GRUP RUTE DATA MAGANG ---
     Route::get('/magang', [MagangController::class, 'index'])->name('magang.index');
     Route::post('/magang', [MagangController::class, 'store'])->name('magang.store');
-    Route::get('/magang/{magang}', [MagangController::class, 'show'])->name('magang.show');
+    
+    // Rute 'show' yang dinamis dipindahkan ke bawah
 
     
     Route::middleware('admin')->group(function () {
-        Route::get('/magang/create', [MagangController::class, 'create'])->name('magang.create');
+        // Rute 'create' (spesifik) harus didefinisikan sebelum 'show' (dinamis)
+        Route::get('/magang/create', [MagangController::class, 'create'])->name('magang.create'); 
         Route::get('/magang/{magang}/edit', [MagangController::class, 'edit'])->name('magang.edit');
         Route::put('/magang/{magang}', [MagangController::class, 'update'])->name('magang.update');
         Route::delete('/magang/{magang}', [MagangController::class, 'destroy'])->name('magang.destroy');
@@ -46,6 +48,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/pendaftaran-magang/{pendaftaran}/status', [PendaftaranController::class, 'updateStatus'])->name('daftar.updateStatus');
         Route::get('/pendaftaran-magang/{pendaftaran}/download/{field}', [PendaftaranController::class, 'downloadFile'])->name('daftar.downloadFile');
     });
+
+    // ✅ DIPINDAHKAN: Rute 'show' (dinamis) sekarang ada di akhir,
+    // sehingga tidak "menangkap" rute '/magang/create'.
+    Route::get('/magang/{magang}', [MagangController::class, 'show'])->name('magang.show');
+
 });
 
 require __DIR__ . '/auth.php';

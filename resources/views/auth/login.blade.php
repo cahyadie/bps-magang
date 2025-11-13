@@ -422,6 +422,25 @@
                 </button>
             </div>
         </form>
+
+        <div class="relative my-6" style="animation: fadeIn 0.6s ease-out 0.8s both;">
+            <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t border-gray-700"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-[#2a2a2a] text-gray-400">Atau login dengan</span>
+            </div>
+        </div>
+
+        <div style="animation: slideInRight 0.6s ease-out 0.9s both;">
+            <a href="{{ route('google.redirect') }}" 
+               class="claude-button w-full flex justify-center items-center" 
+               style="background: #ffffff; color: #1f2937; text-decoration: none; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);">
+                <i class="fab fa-google mr-2"></i> 
+                <span>Login dengan Google</span>
+            </a>
+        </div>
+        
     </div>
 </body>
 

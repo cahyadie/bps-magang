@@ -1,54 +1,63 @@
+{{-- resources/views/profile/partials/delete-user-form.blade.php --}}
 <section class="space-y-6">
     <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Delete Account') }}
+        <h2 class="claude-title text-xl text-white">
+            Hapus Akun
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+        <p class="mt-2 text-sm text-gray-400">
+            Setelah akun Anda dihapus, semua data dan sumber dayanya akan dihapus permanen. Sebelum menghapus akun, harap unduh data apa pun yang ingin Anda simpan.
         </p>
     </header>
 
-    <x-danger-button
+    {{-- Ganti <x-danger-button> dengan <button> yang di-style --}}
+    <button
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+        class="filter-btn bg-red-700 hover:bg-red-600 text-white shadow-lg shadow-red-600/30"
+    >Hapus Akun</button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
+        
+        {{-- Style modal agar gelap --}}
+        <form method="post" action="{{ route('profile.destroy') }}" class="p-6 bg-[#2a2a2a] border border-[#3a3a3a] rounded-lg">
             @csrf
             @method('delete')
 
-            <h2 class="text-lg font-medium text-gray-900">
-                {{ __('Are you sure you want to delete your account?') }}
+            <h2 class="claude-title text-xl text-white">
+                Apakah Anda yakin ingin menghapus akun Anda?
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+            <p class="mt-2 text-sm text-gray-400">
+                Setelah akun Anda dihapus, semua data akan dihapus permanen. Masukkan password Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun secara permanen.
             </p>
 
             <div class="mt-6">
-                <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
+                <label for="password_delete" class="filter-label sr-only">Password</label>
 
-                <x-text-input
-                    id="password"
+                <input
+                    id="password_delete"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
+                    class="filter-input mt-1 block w-3/4"
+                    placeholder="Password"
                 />
 
-                <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
+                @error('password', 'userDeletion')
+                    <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
-                    {{ __('Cancel') }}
-                </x-secondary-button>
+            <div class="mt-6 flex justify-end gap-3">
+                {{-- Ganti <x-secondary-button> dengan <button> yang di-style --}}
+                <button type="button" class="filter-btn filter-btn-secondary" x-on:click="$dispatch('close')">
+                    Batal
+                </button>
 
-                <x-danger-button class="ms-3">
-                    {{ __('Delete Account') }}
-                </x-danger-button>
+                {{-- Ganti <x-danger-button> dengan <button> yang di-style --}}
+                <button type="submit" class="filter-btn bg-red-700 hover:bg-red-600 text-white shadow-lg shadow-red-600/30">
+                    Hapus Akun
+                </button>
             </div>
         </form>
     </x-modal>

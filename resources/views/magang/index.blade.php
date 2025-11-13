@@ -385,37 +385,6 @@
                     }, 500); 
                 }, 3000);
             }
-
-            // ... (Kode particle JS Anda) ...
-            let particleCount = 0;
-            const maxParticles = 50;
-            
-            document.addEventListener('mousemove', (e) => {
-                if (e.clientX > 256 && particleCount < maxParticles && Math.random() > 0.85) {
-                    createParticle(e.clientX, e.clientY);
-                }
-            });
-
-            function createParticle(x, y) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-                particle.style.animationDelay = Math.random() * 0.5 + 's';
-                particle.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                
-                document.body.appendChild(particle);
-                particleCount++;
-                
-                setTimeout(() => {
-                    particle.remove();
-                    particleCount--;
-                }, 3000);
-            }
-
-            if (window.innerWidth < 768) {
-                document.removeEventListener('mousemove', createParticle);
-            }
         </script>
     @endpush
 </x-main-layout>

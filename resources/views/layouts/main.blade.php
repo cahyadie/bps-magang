@@ -1264,20 +1264,25 @@
 
 {{-- Beri kelas 'view-grid' sebagai default --}}
 
-<body class="font-sans antialiased view-grid">
-
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
+<body class="font-sans antialiased view-grid" x-data="{ expanded: true }">
 
     <div class="flex">
         @include('layouts.sidebar')
 
-        {{-- pl-64 agar konten tidak tertimpa sidebar --}}
-        <main class="flex-1 pl-64">
+        {{-- 
+          2. Ubah <main> agar padding-left-nya dinamis
+             pl-64 (saat expanded) menjadi pl-20 (saat terlipat)
+             Tambahkan juga transisi untuk animasi yang mulus.
+        --}}
+        <main class="flex-1 transition-all duration-300 ease-in-out" 
+              :class="expanded ? 'pl-64' : 'pl-20'">
+            
             {{ $slot }}
         </main>
     </div>
+
+    {{-- 3. Tambahkan script Alpine.js di sini --}}
+    <script src="//unpkg.com/alpinejs" defer></script>
 
     {{-- Tempat untuk script khusus halaman --}}
     @stack('scripts')

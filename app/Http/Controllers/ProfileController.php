@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Magang;
 
 class ProfileController extends Controller
 {
@@ -16,8 +17,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        // Ambil data magang berdasarkan email user yang login
+        $magang = Magang::where('email', $request->user()->email)->first(); // <-- TAMBAHKAN INI
+
         return view('profile.edit', [
             'user' => $request->user(),
+            'magang' => $magang, // <-- TAMBAHKAN INI
         ]);
     }
 
