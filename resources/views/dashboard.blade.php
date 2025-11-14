@@ -2,14 +2,13 @@
 <x-main-layout>
 
     {{-- =========================================== --}}
-    {{-- BAGIAN 1: TAMPILAN UNTUK ADMIN --}}
+    {{-- BAGIAN 1: KUMPULAN STYLES (KONDISIONAL) --}}
     {{-- =========================================== --}}
-    @if($role == 'admin')
-
-        {{-- PUSH STYLE UNTUK DARK MODE KALENDER --}}
-        @push('styles')
+    @push('styles')
+        @if($role == 'admin')
+            {{-- PUSH STYLE UNTUK DARK MODE KALENDER ADMIN --}}
             <style>
-                /* FullCalendar Dark Theme Overrides */
+                /* FullCalendar Dark Theme Overrides (Admin) */
                 .claude-calendar {
                     color: #d1d5db;
                 }
@@ -85,7 +84,291 @@
                     display: none !important;
                 }
             </style>
-        @endpush
+        @elseif($role == 'user')
+            {{-- Helper CSS untuk status badge DAN Kalender User --}}
+            <style>
+                .status-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    padding: 0.5rem 1rem;
+                    border-radius: 9999px;
+                    font-weight: 600;
+                    font-size: 0.875rem;
+                }
+
+                .claude-button {
+                    background: linear-gradient(135deg, #d97757 0%, #e88968 100%);
+                    color: #ffffff;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 12px;
+                    font-weight: 600;
+                    transition: all 0.3s;
+                    border: none;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    text-decoration: none;
+                    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.3);
+                }
+
+                .claude-button:hover {
+                    background: linear-gradient(135deg, #e88968 0%, #f09a7a 100%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4);
+                }
+
+                /* CSS DARK MODE KALENDER UNTUK USER */
+                .claude-calendar {
+                    color: #d1d5db;
+                }
+
+                .fc .fc-toolbar-title {
+                    color: #ffffffff;
+                }
+
+                .fc .fc-button-primary {
+                    background-color: #22c55e;
+                    border-color: #22c55e;
+                    color: #ffffff;
+                }
+
+                .fc .fc-button-primary:hover,
+                .fc .fc-button-primary:active {
+                    background-color: #16a34a;
+                    border-color: #16a34a;
+                }
+
+                .fc .fc-button {
+                    background-color: #374151;
+                    border-color: #4b5563;
+                    color: #d1d5db;
+                }
+
+                .fc .fc-daygrid-day.fc-day-today {
+                    background-color: rgba(34, 197, 94, 0.1);
+                }
+
+                .fc .fc-daygrid-day-number {
+                    color: #191a1aff !important;
+                }
+
+                .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+                    color: #e88968 !important;
+                    font-weight: bold;
+                }
+
+                .fc .fc-col-header-cell-cushion {
+                    color: #f3b49f !important;
+                    /* Contoh: Oranye Muda */
+                }
+
+                /* CSS UNTUK SEMBUNYIKAN EVENT BAR (USER) */
+                .fc-event {
+                    cursor: help;
+                }
+
+                .fc-daygrid-event {
+                    background-color: transparent !important;
+                    border: none !important;
+                    padding: 0 !important;
+                    margin-top: 4px;
+                    margin-left: 5px;
+                    display: inline-flex;
+                    width: auto;
+                    height: auto;
+                }
+
+                .fc-daygrid-event-dot {
+                    display: none !important;
+                }
+
+                .fc-event-title,
+                .fc-event-time {
+                    display: none !important;
+                }
+            </style>
+        @endif
+    @endpush
+
+
+    {{-- =========================================== --}}
+    {{-- BAGIAN 2: KUMPULAN SCRIPTS (KONDISIONAL) --}}
+    {{-- =========================================== --}}
+    @push('scripts')
+        @if($role == 'admin')
+            {{-- SCRIPT UNTUK GRAFIK ADMIN --}}
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // === Bagian Chart.js ===
+                    const pendaftaranLabels = @json($pendaftaranChartLabels);
+                    const pendaftaranData = @json($pendaftaranChartData);
+                    const magangData = @json($magangChartData);
+                    const statusData = @json($statusChartData);
+
+                    Chart.defaults.color = '#9ca3af';
+                    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+                    // ✅ 1. KODE GRAFIK PENDAFTARAN (LENGKAP)
+                    const ctxPendaftaran = document.getElementById('pendaftaranChart');
+                    if (ctxPendaftaran) {
+                        new Chart(ctxPendaftaran, {
+                            type: 'bar',
+                            data: {
+                                labels: pendaftaranLabels,
+                                datasets: [{
+                                    label: 'Jumlah Pendaftar',
+                                    data: pendaftaranData,
+                                    backgroundColor: 'rgba(217, 119, 87, 0.6)',
+                                    borderColor: 'rgba(217, 119, 87, 1)',
+                                    borderWidth: 1
+                                }]
+                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                        });
+                    }
+
+                    // ✅ 2. KODE GRAFIK STATUS (LENGKAP)
+                    const ctxStatus = document.getElementById('statusChart');
+                    if (ctxStatus) {
+                        new Chart(ctxStatus, {
+                            type: 'doughnut',
+                            data: {
+                                labels: ['Menunggu', 'Disetujui', 'Ditolak', 'Bersyarat'],
+                                datasets: [{
+                                    label: 'Status Pendaftar',
+                                    data: statusData,
+                                    backgroundColor: ['rgba(250, 204, 21, 0.7)', 'rgba(74, 222, 128, 0.7)', 'rgba(248, 113, 113, 0.7)', 'rgba(96, 165, 250, 0.7)'],
+                                    borderColor: '#3a3a3a',
+                                    borderWidth: 2
+                                }]
+                            }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                        });
+                    }
+
+                    // ✅ 3. KODE GRAFIK MAGANG (LENGKAP)
+                    const ctxMagang = document.getElementById('magangChart');
+                    if (ctxMagang) {
+                        new Chart(ctxMagang, {
+                            type: 'line',
+                            data: {
+                                labels: pendaftaranLabels, // Menggunakan label yang sama
+                                datasets: [{
+                                    label: 'Peserta Mulai Magang',
+                                    data: magangData,
+                                    backgroundColor: 'rgba(96, 165, 250, 0.2)',
+                                    borderColor: 'rgba(96, 165, 250, 1)',
+                                    borderWidth: 2,
+                                    fill: true,
+                                    tension: 0.3
+                                }]
+                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                        });
+                    }
+
+                    // === INISIALISASI FULLCALENDAR (ADMIN) ===
+                    const calendarEl = document.getElementById('calendar');
+                    if (calendarEl) {
+                        const calendarEvents = @json($calendarEvents);
+
+                        const calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'dayGridMonth',
+                            locale: 'id',
+                            headerToolbar: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'dayGridMonth' // HANYA TAMPILKAN BULAN
+                            },
+                            events: calendarEvents,
+                            height: 'auto',
+
+                            // FUNGSI eventContent UNTUK MENGGANTI IKON
+                            eventContent: function (info) {
+                                const props = info.event.extendedProps;
+                                const title = info.event.title;
+                                let iconClass = '';
+
+                                if (props.icon === 'play') {
+                                    // Ikon Mulai
+                                    iconClass = 'fas fa-user text-green-400 text-lg'; // IKON USER
+                                } else if (props.icon === 'flag') {
+                                    // Ikon Selesai
+                                    iconClass = 'fas fa-user-check text-red-400 text-lg'; // IKON USER DENGAN CENTANG (agar beda)
+                                }
+
+                                if (iconClass) {
+                                    let iconEl = document.createElement('i');
+                                    iconEl.className = iconClass;
+                                    iconEl.setAttribute('title', title);
+
+                                    return { domNodes: [iconEl] };
+                                }
+
+                                return false;
+                            },
+                        });
+
+                        calendar.render();
+                    }
+                });
+            </script>
+        @elseif($role == 'user')
+            {{-- SCRIPT KALENDER UNTUK USER --}}
+            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // === INISIALISASI FULLCALENDAR UNTUK USER ===
+                    const calendarEl = document.getElementById('calendar');
+                    if (calendarEl) {
+                        const calendarEvents = @json($calendarEvents); // Ambil data dari controller
+
+                        const calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'dayGridMonth',
+                            locale: 'id',
+                            headerToolbar: {
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'dayGridMonth' // HANYA TAMPILKAN BULAN
+                            },
+                            events: calendarEvents,
+                            height: 'auto',
+
+                            // FUNGSI eventContent UNTUK MENGGANTI IKON
+                            eventContent: function (info) {
+                                const props = info.event.extendedProps;
+                                const title = info.event.title;
+                                let iconClass = '';
+
+                                if (props.icon === 'play') {
+                                    iconClass = 'fas fa-user text-green-400 text-lg'; // IKON USER
+                                } else if (props.icon === 'flag') {
+                                    iconClass = 'fas fa-user-check text-red-400 text-lg'; // IKON USER DENGAN CENTANG
+                                }
+
+                                if (iconClass) {
+                                    let iconEl = document.createElement('i');
+                                    iconEl.className = iconClass;
+                                    iconEl.setAttribute('title', title); // Tooltip
+
+                                    return { domNodes: [iconEl] };
+                                }
+
+                                return false;
+                            },
+                        });
+
+                        calendar.render();
+                    }
+                });
+            </script>
+        @endif
+    @endpush
+
+
+    {{-- =========================================== --}}
+    {{-- BAGIAN 3: TAMPILAN UNTUK ADMIN (HTML) --}}
+    {{-- =========================================== --}}
+    @if($role == 'admin')
 
         <div class="claude-container">
 
@@ -182,132 +465,8 @@
             </div>
         </div>
 
-        {{-- SCRIPT UNTUK GRAFIK ADMIN --}}
-        @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // === Bagian Chart.js ===
-                    const pendaftaranLabels = @json($pendaftaranChartLabels);
-                    const pendaftaranData = @json($pendaftaranChartData);
-                    const magangData = @json($magangChartData);
-                    const statusData = @json($statusChartData);
-
-                    Chart.defaults.color = '#9ca3af';
-                    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
-
-                    // ✅ 1. KODE GRAFIK PENDAFTARAN (LENGKAP)
-                    const ctxPendaftaran = document.getElementById('pendaftaranChart');
-                    if (ctxPendaftaran) {
-                        new Chart(ctxPendaftaran, {
-                            type: 'bar',
-                            data: {
-                                labels: pendaftaranLabels,
-                                datasets: [{
-                                    label: 'Jumlah Pendaftar',
-                                    data: pendaftaranData,
-                                    backgroundColor: 'rgba(217, 119, 87, 0.6)',
-                                    borderColor: 'rgba(217, 119, 87, 1)',
-                                    borderWidth: 1
-                                }]
-                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-                        });
-                    }
-
-                    // ✅ 2. KODE GRAFIK STATUS (LENGKAP)
-                    const ctxStatus = document.getElementById('statusChart');
-                    if (ctxStatus) {
-                        new Chart(ctxStatus, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Menunggu', 'Disetujui', 'Ditolak', 'Bersyarat'],
-                                datasets: [{
-                                    label: 'Status Pendaftar',
-                                    data: statusData,
-                                    backgroundColor: ['rgba(250, 204, 21, 0.7)', 'rgba(74, 222, 128, 0.7)', 'rgba(248, 113, 113, 0.7)', 'rgba(96, 165, 250, 0.7)'],
-                                    borderColor: '#3a3a3a',
-                                    borderWidth: 2
-                                }]
-                            }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-                        });
-                    }
-
-                    // ✅ 3. KODE GRAFIK MAGANG (LENGKAP)
-                    const ctxMagang = document.getElementById('magangChart');
-                    if (ctxMagang) {
-                        new Chart(ctxMagang, {
-                            type: 'line',
-                            data: {
-                                labels: pendaftaranLabels, // Menggunakan label yang sama
-                                datasets: [{
-                                    label: 'Peserta Mulai Magang',
-                                    data: magangData,
-                                    backgroundColor: 'rgba(96, 165, 250, 0.2)',
-                                    borderColor: 'rgba(96, 165, 250, 1)',
-                                    borderWidth: 2,
-                                    fill: true,
-                                    tension: 0.3
-                                }]
-                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-                        });
-                    }
-
-
-                    // === INISIALISASI FULLCALENDAR ===
-                    const calendarEl = document.getElementById('calendar');
-                    if (calendarEl) {
-                        const calendarEvents = @json($calendarEvents);
-
-                        const calendar = new FullCalendar.Calendar(calendarEl, {
-                            initialView: 'dayGridMonth',
-                            locale: 'id',
-                            headerToolbar: {
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth' // HANYA TAMPILKAN BULAN
-                            },
-                            events: calendarEvents,
-                            height: 'auto',
-
-                            // FUNGSI eventContent UNTUK MENGGANTI IKON
-                            eventContent: function (info) {
-                                const props = info.event.extendedProps;
-                                const title = info.event.title;
-                                let iconClass = '';
-
-                                if (props.icon === 'play') {
-                                    // Ikon Mulai
-                                    iconClass = 'fas fa-user text-green-400 text-lg'; // IKON USER
-                                } else if (props.icon === 'flag') {
-                                    // Ikon Selesai
-                                    iconClass = 'fas fa-user-check text-red-400 text-lg'; // IKON USER DENGAN CENTANG (agar beda)
-                                }
-
-                                if (iconClass) {
-                                    let iconEl = document.createElement('i');
-                                    iconEl.className = iconClass;
-                                    iconEl.setAttribute('title', title);
-
-                                    return { domNodes: [iconEl] };
-                                }
-
-                                return false;
-                            },
-                        });
-
-                        calendar.render();
-                    }
-
-                });
-            </script>
-        @endpush
-
-
-
         {{-- =========================================== --}}
-        {{-- BAGIAN 2: TAMPILAN UNTUK USER BIASA --}}
+        {{-- BAGIAN 4: TAMPILAN UNTUK USER BIASA (HTML) --}}
         {{-- =========================================== --}}
     @elseif($role == 'user')
 
@@ -399,162 +558,6 @@
 
             </div>
         </div>
-
-        {{-- Helper CSS untuk status badge DAN Kalender User --}}
-        @push('styles')
-            <style>
-                .status-badge {
-                    display: inline-flex;
-                    align-items: center;
-                    padding: 0.5rem 1rem;
-                    border-radius: 9999px;
-                    font-weight: 600;
-                    font-size: 0.875rem;
-                }
-
-                .claude-button {
-                    background: linear-gradient(135deg, #d97757 0%, #e88968 100%);
-                    color: #ffffff;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 12px;
-                    font-weight: 600;
-                    transition: all 0.3s;
-                    border: none;
-                    cursor: pointer;
-                    display: inline-flex;
-                    align-items: center;
-                    text-decoration: none;
-                    box-shadow: 0 4px 15px rgba(217, 119, 87, 0.3);
-                }
-
-                .claude-button:hover {
-                    background: linear-gradient(135deg, #e88968 0%, #f09a7a 100%);
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4);
-                }
-
-                /* (BARU) CSS DARK MODE KALENDER UNTUK USER */
-                .claude-calendar {
-                    color: #d1d5db;
-                }
-
-                .fc .fc-toolbar-title {
-                    color: #ffffffff;
-                }
-
-                .fc .fc-button-primary {
-                    background-color: #22c55e;
-                    border-color: #22c55e;
-                    color: #ffffff;
-                }
-
-                .fc .fc-button-primary:hover,
-                .fc .fc-button-primary:active {
-                    background-color: #16a34a;
-                    border-color: #16a34a;
-                }
-
-                .fc .fc-button {
-                    background-color: #374151;
-                    border-color: #4b5563;
-                    color: #d1d5db;
-                }
-
-                .fc .fc-daygrid-day.fc-day-today {
-                    background-color: rgba(34, 197, 94, 0.1);
-                }
-
-                .fc .fc-daygrid-day-number {
-                    color: #191a1aff !important;
-                }
-
-                .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-                    color: #e88968 !important;
-                    font-weight: bold;
-                }
-
-                .fc .fc-col-header-cell-cushion {
-                    color: #f3b49f !important;
-                    /* Contoh: Oranye Muda */
-                }
-
-                /* CSS UNTUK SEMBUNYIKAN EVENT BAR (USER) */
-                .fc-event {
-                    cursor: help;
-                }
-
-                .fc-daygrid-event {
-                    background-color: transparent !important;
-                    border: none !important;
-                    padding: 0 !important;
-                    margin-top: 4px;
-                    margin-left: 5px;
-                    display: inline-flex;
-                    width: auto;
-                    height: auto;
-                }
-
-                .fc-daygrid-event-dot {
-                    display: none !important;
-                }
-
-                .fc-event-title,
-                .fc-event-time {
-                    display: none !important;
-                }
-            </style>
-        @endpush
-
-        {{-- (BARU) SCRIPT KALENDER UNTUK USER --}}
-        @push('scripts')
-            <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // === INISIALISASI FULLCALENDAR UNTUK USER ===
-                    const calendarEl = document.getElementById('calendar');
-                    if (calendarEl) {
-                        const calendarEvents = @json($calendarEvents); // Ambil data dari controller
-
-                        const calendar = new FullCalendar.Calendar(calendarEl, {
-                            initialView: 'dayGridMonth',
-                            locale: 'id',
-                            headerToolbar: {
-                                left: 'prev,next today',
-                                center: 'title',
-                                right: 'dayGridMonth' // HANYA TAMPILKAN BULAN
-                            },
-                            events: calendarEvents,
-                            height: 'auto',
-
-                            // FUNGSI eventContent UNTUK MENGGANTI IKON
-                            eventContent: function (info) {
-                                const props = info.event.extendedProps;
-                                const title = info.event.title;
-                                let iconClass = '';
-
-                                if (props.icon === 'play') {
-                                    iconClass = 'fas fa-user text-green-400 text-lg'; // IKON USER
-                                } else if (props.icon === 'flag') {
-                                    iconClass = 'fas fa-user-check text-red-400 text-lg'; // IKON USER DENGAN CENTANG
-                                }
-
-                                if (iconClass) {
-                                    let iconEl = document.createElement('i');
-                                    iconEl.className = iconClass;
-                                    iconEl.setAttribute('title', title); // Tooltip
-
-                                    return { domNodes: [iconEl] };
-                                }
-
-                                return false;
-                            },
-                        });
-
-                        calendar.render();
-                    }
-                });
-            </script>
-        @endpush
 
     @endif
 

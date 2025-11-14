@@ -20,7 +20,6 @@ class Magang extends Model
         'prodi',
         'tanggal_mulai',
         'tanggal_selesai',
-        'karya',
         'whatsapp',
         'instagram',
         'tiktok',

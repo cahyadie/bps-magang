@@ -8,26 +8,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\Magang;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Menampilkan form profil user.
+     * (INI FUNGSI YANG BENAR)
      */
     public function edit(Request $request): View
     {
-        // Ambil data magang berdasarkan email user yang login
-        $magang = Magang::where('email', $request->user()->email)->first(); // <-- TAMBAHKAN INI
-
         return view('profile.edit', [
             'user' => $request->user(),
-            'magang' => $magang, // <-- TAMBAHKAN INI
         ]);
     }
 
     /**
-     * Update the user's profile information.
+     * Memperbarui informasi profil user.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
@@ -43,7 +39,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Menghapus akun user.
      */
     public function destroy(Request $request): RedirectResponse
     {
