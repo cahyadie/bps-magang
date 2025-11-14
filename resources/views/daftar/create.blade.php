@@ -4,31 +4,32 @@
         
         {{-- Header Section --}}
         <div class="border-b border-[#3a3a3a] header-section">
-            <div class="max-w-7xl mx-auto px-6 py-4">
-                {{-- ✅ BUTTON BACK DITAMBAHKAN DI SINI --}}
+            {{-- ✅ Padding disesuaikan untuk mobile (px-4) --}}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
                 <div class="flex items-center gap-4">
                     <a href="{{ route('daftar.index') }}" class="text-gray-400 hover:text-white" title="Kembali">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    <h2 class="claude-title text-2xl text-white">
+                    {{-- ✅ Ukuran font disesuaikan untuk mobile (text-xl) --}}
+                    <h2 class="claude-title text-xl sm:text-2xl text-white">
                         Form Pendaftaran Magang
                     </h2>
                 </div>
             </div>
         </div>
 
-        {{-- ✅ CONTAINER DIPERLEBAR (max-w-5xl) --}}
-        <div class="max-w-5xl mx-auto py-8 px-6">
+        {{-- ✅ Padding disesuaikan untuk mobile (px-4) --}}
+        <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6">
             
             {{-- Form Container --}}
             <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                 
                 {{-- FORM --}}
-                {{-- Penting: enctype="multipart/form-data" diperlukan untuk upload file --}}
                 <form method="POST" action="{{ route('daftar.store') }}" enctype="multipart/form-data">
                     @csrf
 
-                    {{-- ✅ LAYOUT GRID 2 KOLOM DITERAPKAN DI SINI --}}
+                    {{-- ✅ Layout grid ini sudah responsive (default 1 kolom, 2 kolom di lg) --}}
+                    {{-- Padding p-6 md:p-8 juga sudah baik --}}
                     <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                         {{-- Kolom Kiri: Data Diri --}}
@@ -53,11 +54,19 @@
                             <div>
                                 <label for="asal_kampus" class="filter-label mb-2">Asal Kampus</label>
                                 <input type="text" name="asal_kampus" id="asal_kampus" class="filter-input" 
-                                       placeholder="Contoh: Universitas Gadjah Mada" value="{{ old('asal_kampus') }}" required>
+                                       placeholder="Contoh: Universitas Muhammadiyah Yogyakarta" value="{{ old('asal_kampus') }}" required>
                                 @error('asal_kampus') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
+                            <div>
+                                <label for="prodi" class="filter-label mb-2">Prodi / Jurusan</label>
+                                <input type="text" name="prodi" id="prodi" class="filter-input" 
+                                       placeholder="Contoh: Teknologi Informasi" value="{{ old('prodi') }}" required>
+                                @error('prodi') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
+                            </div>
+
                             {{-- Periode Magang (Grid 2 kolom) --}}
+                            {{-- ✅ Layout ini juga sudah responsive (default 1 kolom, 2 kolom di md) --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai</label>
@@ -109,13 +118,27 @@
                     </div>
 
                     {{-- Tombol Submit --}}
-                    <div class="bg-[#1a1a1a]/50 px-6 py-4 border-t border-[#3a3a3a] text-right">
-                        <a href="{{ route('daftar.index') }}" class="filter-btn filter-btn-secondary mr-2">
-                            <i class="fas fa-times"></i> Batal
-                        </a>
-                        <button type="submit" class="filter-btn filter-btn-primary">
-                            <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
-                        </button>
+                    {{-- ✅ Bagian ini diubah signifikan untuk mobile --}}
+                    <div class="bg-[#1a1a1a]/50 px-4 py-4 sm:px-6 border-t border-[#3a3a3a]">
+                        {{-- 
+                            - flex-col-reverse: Stack vertikal di mobile (Batal di bawah, Kirim di atas)
+                            - sm:flex-row: Kembali horizontal di layar sm (640px) ke atas
+                            - sm:justify-end: Rata kanan di layar sm ke atas
+                            - gap-3: Memberi jarak antar tombol
+                        --}}
+                        <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:items-center gap-3">
+                            {{-- 
+                                - w-full: Tombol full-width di mobile
+                                - sm:w-auto: Lebar otomatis di layar sm ke atas
+                                - text-center: Diperlukan untuk 'Batal' agar teksnya rata tengah saat full-width
+                            --}}
+                            <a href="{{ route('daftar.index') }}" class="filter-btn filter-btn-secondary w-full sm:w-auto text-center">
+                                <i class="fas fa-times"></i> Batal
+                            </a>
+                            <button type="submit" class="filter-btn filter-btn-primary w-full sm:w-auto">
+                                <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
+                            </button>
+                        </div>
                     </div>
                 </form>
 

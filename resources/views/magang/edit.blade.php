@@ -1,17 +1,18 @@
 {{-- resources/views/magang/edit.blade.php --}}
 <x-main-layout>
     <div class="claude-container">
-        
+
         {{-- Header Section --}}
         <div class="border-b border-[#3a3a3a] header-section">
             <div class="max-w-7xl mx-auto px-6 py-4">
                 <div class="flex items-center gap-4">
-                    
+
                     {{-- ✅ PERUBAHAN LINK KEMBALI DI SINI --}}
-                    <a href="{{ route('magang.index') }}" class="text-gray-400 hover:text-white" title="Kembali ke Data Magang">
+                    <a href="{{ route('magang.index') }}" class="text-gray-400 hover:text-white"
+                        title="Kembali ke Data Magang">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    
+
                     <h2 class="claude-title text-2xl text-white">
                         Edit Data Magang
                     </h2>
@@ -66,6 +67,16 @@
                                 </div>
 
                                 <div class="mb-6">
+                                    <label for="prodi" class="filter-label">Prodi / Jurusan</label>
+                                    <input type="text" name="prodi" id="prodi" placeholder="Contoh: Informatika"
+                                        value="{{ old('prodi', $magang->prodi) }}"
+                                        class="filter-input @error('prodi') border-red-500 @enderror" required>
+                                    @error('prodi')
+                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-6">
                                     <label for="tanggal_mulai" class="filter-label">Tanggal Mulai</label>
                                     <input type="date" name="tanggal_mulai" id="tanggal_mulai"
                                         value="{{ old('tanggal_mulai', $magang->tanggal_mulai->format('Y-m-d')) }}"
@@ -79,7 +90,8 @@
                                     <label for="tanggal_selesai" class="filter-label">Tanggal Selesai</label>
                                     <input type="date" name="tanggal_selesai" id="tanggal_selesai"
                                         value="{{ old('tanggal_selesai', $magang->tanggal_selesai->format('Y-m-d')) }}"
-                                        class="filter-input @error('tanggal_selesai') border-red-500 @enderror" required>
+                                        class="filter-input @error('tanggal_selesai') border-red-500 @enderror"
+                                        required>
                                     @error('tanggal_selesai')
                                         <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -90,7 +102,8 @@
                                     <textarea name="link_pekerjaan" id="link_pekerjaan" rows="3"
                                         class="filter-input @error('link_pekerjaan') border-red-500 @enderror"
                                         placeholder="Contoh: https://drive.google.com/...">{{ old('link_pekerjaan', $magang->link_pekerjaan) }}</textarea>
-                                    <p class="text-gray-400 text-xs mt-2">Masukkan link Google Drive, GitHub, atau portfolio online</p>
+                                    <p class="text-gray-400 text-xs mt-2">Masukkan link Google Drive, GitHub, atau
+                                        portfolio online</p>
                                     @error('link_pekerjaan')
                                         <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -111,12 +124,12 @@
                                     @endif
 
                                     <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/jpg"
-                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#3a3a3a] file:text-gray-300 hover:file:bg-[#4a4a4a] @error('foto') border-red-500 @enderror" onchange="previewImage(event)">
-                                    <p class="text-gray-400 text-xs mt-2">Kosongkan jika tidak ingin mengubah foto | Format: JPG, PNG | Maksimal 2MB</p>
-                                    <img id="preview"
-                                        class="max-w-[250px] rounded-lg mt-4 border border-[#3a3a3a]"
-                                        style="display: none;"
-                                        alt="Preview">
+                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#3a3a3a] file:text-gray-300 hover:file:bg-[#4a4a4a] @error('foto') border-red-500 @enderror"
+                                        onchange="previewImage(event)">
+                                    <p class="text-gray-400 text-xs mt-2">Kosongkan jika tidak ingin mengubah foto |
+                                        Format: JPG, PNG | Maksimal 2MB</p>
+                                    <img id="preview" class="max-w-[250px] rounded-lg mt-4 border border-[#3a3a3a]"
+                                        style="display: none;" alt="Preview">
                                     @error('foto')
                                         <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
                                     @enderror
@@ -133,10 +146,12 @@
                                         <div class="flex items-center gap-3">
                                             <i class="fab fa-whatsapp fa-fw fa-lg w-6 text-green-500 text-center"></i>
                                             <input type="text" name="whatsapp" id="whatsapp"
-                                                value="{{ old('whatsapp', $magang->whatsapp) }}" placeholder="081234567890"
+                                                value="{{ old('whatsapp', $magang->whatsapp) }}"
+                                                placeholder="081234567890"
                                                 class="filter-input @error('whatsapp') border-red-500 @enderror">
                                         </div>
-                                        <p class="text-gray-400 text-xs mt-2 ml-9">Masukkan nomor tanpa tanda + atau spasi</p>
+                                        <p class="text-gray-400 text-xs mt-2 ml-9">Masukkan nomor tanpa tanda + atau
+                                            spasi</p>
                                         @error('whatsapp')
                                             <p class="text-red-400 text-xs mt-2 ml-9">{{ $message }}</p>
                                         @enderror
@@ -147,7 +162,8 @@
                                         <div class="flex items-center gap-3">
                                             <i class="fab fa-instagram fa-fw fa-lg w-6 text-pink-500 text-center"></i>
                                             <input type="text" name="instagram" id="instagram"
-                                                value="{{ old('instagram', $magang->instagram) }}" placeholder="@username"
+                                                value="{{ old('instagram', $magang->instagram) }}"
+                                                placeholder="@username"
                                                 class="filter-input @error('instagram') border-red-500 @enderror">
                                         </div>
                                         @error('instagram')
@@ -200,10 +216,10 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     {{-- Tombol Aksi (Footer Card) --}}
                     <div class="bg-[#1a1a1a]/50 px-6 py-4 border-t border-[#3a3a3a] flex flex-wrap gap-3 justify-end">
-                        
+
                         {{-- ✅ PERUBAHAN LINK BATAL DI SINI --}}
                         <a href="{{ route('magang.index') }}" class="filter-btn filter-btn-secondary">
                             <i class="fas fa-times mr-2"></i>Batal

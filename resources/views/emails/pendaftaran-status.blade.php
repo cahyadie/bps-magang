@@ -70,8 +70,8 @@ Mohon untuk:
 2. Menghubungi kami untuk konfirmasi pemenuhan persyaratan
 3. Mengirimkan dokumen tambahan (jika diperlukan)
 
-<x-mail::button :url="url('/kontak')" color="primary">
-Hubungi Kami
+<x-mail::button :url="'https://wa.me/6282170003402'" color="primary">
+Hubungi Kami via WhatsApp
 </x-mail::button>
 
 @elseif ($pendaftaran->status == 'rejected')
@@ -89,11 +89,7 @@ Setelah meninjau dengan saksama berkas pendaftaran Anda, dengan berat hati kami 
 {{ $pendaftaran->remarks }}
 </x-mail::panel>
 
-Kami menghargai minat Anda dan mendorong Anda untuk mendaftar kembali pada kesempatan berikutnya.
-
-<x-mail::button :url="url('/pendaftaran')" color="primary">
-Informasi Pendaftaran
-</x-mail::button>
+Kami menghargai minat Anda dan Terimakasih telah mendaftar di sini 
 @endif
 
 ---
@@ -102,9 +98,8 @@ Informasi Pendaftaran
 
 Jika Anda memiliki pertanyaan atau memerlukan informasi lebih lanjut, silakan menghubungi kami:
 
-- **Email:** info@bpsbantul.go.id
-- **Telepon:** (0274) 123456
-- **Website:** {{ config('app.url') }}
+- **Email:** bps3402@bps.go.id
+- **WhatsApp:** [+6282170003402](https://wa.me/6282170003402)
 
 <br>
 
@@ -112,7 +107,7 @@ Hormat kami,
 
 **Tim Kepegawaian**<br>
 {{ config('app.name') }}<br>
-*Jl. Contoh No. 123, Bantul, Yogyakarta*
+*Badan Pusat Statistik Kabupaten Bantul (Statistics Bantul)Jl. Jendral Gatot Subroto No. 3 Bantul*
 
 ---
 

@@ -1,27 +1,34 @@
 <?php
-// app/Models/Magang.php
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Pastikan ini HasFactory
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- Tambahkan ini
 use Carbon\Carbon;
 
 class Magang extends Model
 {
+    use HasFactory; 
+
     protected $fillable = [
+        'user_id', // <-- TAMBAHKAN INI
         'nama',
+        'email',
         'foto',
         'asal_kampus',
+        'prodi',
         'tanggal_mulai',
         'tanggal_selesai',
-        'link_pekerjaan',
+        'karya',
         'whatsapp',
         'instagram',
         'tiktok',
-        'periode_bulan',
-        'status',
         'kesan',
         'pesan',
+        'link_pekerjaan',
+        'periode_bulan',
+        'status',
     ];
 
     protected $casts = [
@@ -29,35 +36,44 @@ class Magang extends Model
         'tanggal_selesai' => 'date',
     ];
 
-    // Auto-calculate periode dan status sebelum save
     protected static function boot()
     {
         parent::boot();
-
         static::saving(function ($magang) {
-            // Hitung periode bulan
             if ($magang->tanggal_mulai && $magang->tanggal_selesai) {
                 $mulai = Carbon::parse($magang->tanggal_mulai);
                 $selesai = Carbon::parse($magang->tanggal_selesai);
-                $magang->periode_bulan = $mulai->diffInMonths($selesai);
-            }
+                
+                $periode = $mulai->diffInMonths($selesai);
+                if ($selesai->day > $mulai->day) {
+                    $periode += 1;
+                }
+                if ($periode == 0 && $mulai->diffInDays($selesai) > 0) {
+                    $periode = 1; 
+                }
+                $magang->periode_bulan = $periode;
 
-            // Tentukan status
-            $now = Carbon::now();
-            $mulai = Carbon::parse($magang->tanggal_mulai);
-            $selesai = Carbon::parse($magang->tanggal_selesai);
-
-            if ($now->lt($mulai)) {
-                $magang->status = 'belum';
-            } elseif ($now->between($mulai, $selesai)) {
-                $magang->status = 'aktif';
-            } else {
-                $magang->status = 'selesai';
+                $now = Carbon::now();
+                if ($now->lt($mulai)) {
+                    $magang->status = 'belum';
+                } elseif ($now->between($mulai, $selesai)) {
+                    $magang->status = 'aktif';
+                } else {
+                    $magang->status = 'selesai';
+                }
             }
         });
     }
 
-    // Accessor untuk initial avatar
+    /**
+     * ✅ TAMBAHKAN RELASI INI
+     * Mendapatkan user yang memiliki data magang ini.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function getInitialsAttribute()
     {
         $words = explode(' ', $this->nama);
@@ -67,7 +83,6 @@ class Magang extends Model
         return strtoupper(substr($this->nama, 0, 2));
     }
 
-    // Accessor untuk foto URL atau initial
     public function getFotoUrlAttribute()
     {
         if ($this->foto) {

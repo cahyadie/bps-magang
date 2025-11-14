@@ -24,33 +24,37 @@ Route::middleware('auth')->group(function () {
 
     
     // --- GRUP RUTE PENDAFTARAN (UNTUK SEMUA USER) ---
-    Route::get('/pendaftaran-magang', [PendaftaranController::class, 'index'])->name('daftar.index');
     Route::get('/pendaftaran-magang/create', [PendaftaranController::class, 'create'])->name('daftar.create');
+    Route::get('/pendaftaran-magang', [PendaftaranController::class, 'index'])->name('daftar.index');
     Route::post('/pendaftaran-magang', [PendaftaranController::class, 'store'])->name('daftar.store');
+    Route::get('/pendaftaran-magang/{pendaftaran}/edit', [PendaftaranController::class, 'edit'])->name('daftar.edit');
+    Route::put('/pendaftaran-magang/{pendaftaran}', [PendaftaranController::class, 'update'])->name('daftar.update');
+    Route::get('/pendaftaran-magang/{pendaftaran}', [PendaftaranController::class, 'show'])->name('daftar.show');
 
 
     // --- GRUP RUTE DATA MAGANG ---
     Route::get('/magang', [MagangController::class, 'index'])->name('magang.index');
-    Route::post('/magang', [MagangController::class, 'store'])->name('magang.store');
     
-    // Rute 'show' yang dinamis dipindahkan ke bawah
+    // ✅ PERBAIKAN: Rute 'edit' dan 'update' dipindahkan ke sini
+    // Rute ini sekarang bisa diakses admin ATAU user pemilik data
+    Route::get('/magang/{magang}/edit', [MagangController::class, 'edit'])->name('magang.edit');
+    Route::put('/magang/{magang}', [MagangController::class, 'update'])->name('magang.update');
 
     
+    // --- GRUP KHUSUS ADMIN ---
     Route::middleware('admin')->group(function () {
-        // Rute 'create' (spesifik) harus didefinisikan sebelum 'show' (dinamis)
+        // Rute Admin untuk Magang
         Route::get('/magang/create', [MagangController::class, 'create'])->name('magang.create'); 
-        Route::get('/magang/{magang}/edit', [MagangController::class, 'edit'])->name('magang.edit');
-        Route::put('/magang/{magang}', [MagangController::class, 'update'])->name('magang.update');
+        Route::post('/magang', [MagangController::class, 'store'])->name('magang.store');
+        // 'edit' dan 'update' sudah dipindah ke atas
         Route::delete('/magang/{magang}', [MagangController::class, 'destroy'])->name('magang.destroy');
         
-        // RUTE TINDAKAN ADMIN
-        Route::get('/pendaftaran-magang/{pendaftaran}', [PendaftaranController::class, 'show'])->name('daftar.show');
+        // RUTE TINDAKAN ADMIN (Pendaftaran)
         Route::post('/pendaftaran-magang/{pendaftaran}/status', [PendaftaranController::class, 'updateStatus'])->name('daftar.updateStatus');
         Route::get('/pendaftaran-magang/{pendaftaran}/download/{field}', [PendaftaranController::class, 'downloadFile'])->name('daftar.downloadFile');
     });
 
-    // ✅ DIPINDAHKAN: Rute 'show' (dinamis) sekarang ada di akhir,
-    // sehingga tidak "menangkap" rute '/magang/create'.
+    // Rute 'show' untuk Magang (semua user auth bisa lihat)
     Route::get('/magang/{magang}', [MagangController::class, 'show'])->name('magang.show');
 
 });

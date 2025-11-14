@@ -30,7 +30,8 @@
             min-height: 100vh;
             padding: 1rem;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto; /* Allow scroll if content exceeds screen */
+            flex-direction: column; /* Make sure content aligns properly on smaller screens */
         }
 
         /* Animated Background Orbs */
@@ -99,6 +100,7 @@
             position: relative;
             z-index: 10;
             animation: slideUp 0.8s ease-out;
+            margin: 0 auto; /* Center the form card */
         }
 
         @keyframes slideUp {
@@ -313,6 +315,7 @@
                 padding: 2rem 1.5rem;
                 max-width: 100%;
                 margin: 1rem;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             }
 
             .claude-title {
@@ -362,19 +365,28 @@
         .claude-button:hover i {
             transform: translateX(3px);
         }
+
+        /* Logo Styling */
+        .logo-image {
+            max-width: 80px; /* Ukuran maksimal logo */
+            height: auto;
+            margin: 0 auto 1rem; /* Posisi di tengah dan margin bawah */
+            display: block;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Animated Background Orbs -->
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
 
     <div class="form-card">
         <div class="text-center mb-8 logo-container">
-            <h1 class="claude-title text-2xl text-white mb-2">Login</h1>
-            <p class="text-sm text-[#9ca3af]">Pendaftaran Magang dan data Magang</p>
+            <img src="/images/Magnet.png" alt="Logo BPS Bantul" class="logo-image">
+            <h1 class="claude-title text-2xl text-white mb-2">MagNet</h1>
+            <p class="text-sm text-[#9ca3af]">Magang Network</p>
+            <p class="text-sm text-[#9ca3af]">Aplikasi Monitoring dan Pendaftaran Magang </p>
         </div>
 
         <form method="POST" action="{{ route('login') }}">
@@ -411,10 +423,6 @@
                         Lupa password?
                     </a>
                 @endif
-                {{-- <!-- Link to Login -->
-                <a href="{{ route('register') }}" class="link-login">
-                    Belum punya akun? <span>Daftar di sini</span>
-                </a> --}}
 
                 <button type="submit" class="claude-button">
                     Log in
@@ -428,14 +436,14 @@
                 <div class="w-full border-t border-gray-700"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-[#2a2a2a] text-gray-400">Atau login dengan</span>
+                <span class="px-2 bg-[#2a2a2a] text-gray-400">Pendaftar Harus Login Dengan Google</span>
             </div>
         </div>
 
         <div style="animation: slideInRight 0.6s ease-out 0.9s both;">
             <a href="{{ route('google.redirect') }}" 
-               class="claude-button w-full flex justify-center items-center" 
-               style="background: #ffffff; color: #1f2937; text-decoration: none; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);">
+                class="claude-button w-full flex justify-center items-center" 
+                style="background: #ffffff; color: #1f2937; text-decoration: none; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);">
                 <i class="fab fa-google mr-2"></i> 
                 <span>Login dengan Google</span>
             </a>

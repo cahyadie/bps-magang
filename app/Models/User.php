@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany; // <-- Tambahkan ini
+use App\Models\Pendaftaran;
+use App\Models\Magang;
 
 class User extends Authenticatable
 {
@@ -37,5 +40,14 @@ class User extends Authenticatable
     public function isUser(): bool
     {
         return $this->role === 'user';
+    }
+
+    public function pendaftarans(): HasMany
+    {
+        return $this->hasMany(Pendaftaran::class);
+    }
+    public function magangs(): HasMany
+    {
+        return $this->hasMany(Magang::class);
     }
 }

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Magang;
+use App\Models\Magang; // Pastikan Anda memiliki model ini
 use App\Models\Pendaftaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth; // <-- TAMBAHKAN INI
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -20,17 +20,16 @@ class DashboardController extends Controller
         //  JIKA USER ADALAH ADMIN
         // ===========================================
         if ($role === 'admin') {
-            // Jalankan SEMUA logika dashboard admin Anda yang sudah ada
 
             $selectedYear = $request->input('year', Carbon::now()->year);
 
             // --- Ambil daftar tahun ---
-            $yearsMagang = Magang::select(DB::raw('YEAR(tanggal_mulai) as year'))->distinct()->pluck('year');
+            $yearsMagang = Pendaftaran::select(DB::raw('YEAR(tanggal_mulai) as year'))->distinct()->pluck('year');
             $yearsPendaftar = Pendaftaran::select(DB::raw('YEAR(created_at) as year'))->distinct()->pluck('year');
             
             $currentYear = Carbon::now()->year;
             $availableYears = $yearsMagang->merge($yearsPendaftar)->push($currentYear)
-                                        ->unique()->sortDesc();
+                                          ->unique()->whereNotNull()->sortDesc();
 
             // --- Query 1: Data Grafik Status Pendaftar ---
             $pendaftarQuery = Pendaftaran::query();
@@ -70,17 +69,22 @@ class DashboardController extends Controller
                     ->pluck('count', 'month');
                 
                 foreach ($pendaftarData as $month => $count) {
-                    $pendaftaranPerBulan[$month] = $count;
+                    if (isset($pendaftaranPerBulan[$month])) {
+                        $pendaftaranPerBulan[$month] = $count;
+                    }
                 }
                 $pendaftaranChartData = array_values($pendaftaranPerBulan);
 
-                $magangData = Magang::whereYear('tanggal_mulai', $selectedYear)
+                $magangData = Pendaftaran::where('status', 'approved') // Ambil dari pendaftaran yang disetujui
+                    ->whereYear('tanggal_mulai', $selectedYear)
                     ->select(DB::raw('MONTH(tanggal_mulai) as month'), DB::raw('COUNT(*) as count'))
                     ->groupBy('month')
                     ->pluck('count', 'month');
 
                 foreach ($magangData as $month => $count) {
-                    $magangPerBulan[$month] = $count;
+                     if (isset($magangPerBulan[$month])) {
+                        $magangPerBulan[$month] = $count;
+                    }
                 }
                 $magangChartData = array_values($magangPerBulan);
 
@@ -94,7 +98,8 @@ class DashboardController extends Controller
                     ->groupBy('year')
                     ->pluck('count', 'year');
                 
-                $magangPerTahun = Magang::select(DB::raw('YEAR(tanggal_mulai) as year'), DB::raw('COUNT(*) as count'))
+                $magangPerTahun = Pendaftaran::where('status', 'approved')
+                    ->select(DB::raw('YEAR(tanggal_mulai) as year'), DB::raw('COUNT(*) as count'))
                     ->groupBy('year')
                     ->pluck('count', 'year');
 
@@ -104,9 +109,44 @@ class DashboardController extends Controller
                 }
             }
 
-            // Kembalikan view dashboard admin dengan semua data chart
+            // ======================================================
+            // LOGIKA KALENDER UNTUK ADMIN (IKON)
+            // ======================================================
+            
+            $queryKalender = Pendaftaran::where('status', 'approved')
+                             ->whereNotNull(['tanggal_mulai', 'tanggal_selesai']); // Pastikan tanggal ada
+                
+            if ($selectedYear != 'all') {
+                $queryKalender->where(function ($query) use ($selectedYear) {
+                    $query->whereYear('tanggal_mulai', $selectedYear)
+                          ->orWhereYear('tanggal_selesai', $selectedYear);
+                });
+            }
+
+            // Gunakan flatMap untuk membuat DUA event (mulai & selesai) per pendaftaran
+            $calendarEvents = $queryKalender->get()->flatMap(function ($pendaftaran) {
+                return [
+                    // Event 1: Tanggal Mulai
+                    [
+                        'title' => $pendaftaran->nama_pendaftar . ' (Mulai)',
+                        'start' => $pendaftaran->tanggal_mulai, // Hanya tanggal mulai
+                        'display' => 'list-item', // Tampilkan sebagai "dot" (yang akan kita styling)
+                        'extendedProps' => ['icon' => 'play'] // Properti kustom untuk ikon
+                    ],
+                    // Event 2: Tanggal Selesai
+                    [
+                        'title' => $pendaftaran->nama_pendaftar . ' (Selesai)',
+                        'start' => $pendaftaran->tanggal_selesai, // Hanya tanggal selesai
+                        'display' => 'list-item',
+                        'extendedProps' => ['icon' => 'flag'] // Properti kustom untuk ikon
+                    ]
+                ];
+            });
+
+
+            // Kembalikan view dashboard admin
             return view('dashboard', [
-                'role' => 'admin', // <-- KIRIM ROLE KE VIEW
+                'role' => 'admin',
                 'statusChartData' => $statusChartData,
                 'pendaftaranChartLabels' => $pendaftaranChartLabels,
                 'pendaftaranChartData' => $pendaftaranChartData,
@@ -114,6 +154,7 @@ class DashboardController extends Controller
                 'magangChartData' => $magangChartData,
                 'availableYears' => $availableYears,
                 'selectedYear' => $selectedYear,
+                'calendarEvents' => $calendarEvents,
             ]);
 
         // ===========================================
@@ -121,20 +162,52 @@ class DashboardController extends Controller
         // ===========================================
         } elseif ($role === 'user') {
             
-            // Ambil data pendaftaran terakhir milik user ini
-            // (Asumsi: ada kolom 'user_id' di tabel Pendaftaran)
             $pendaftaran = Pendaftaran::where('user_id', Auth::id())
-                                      ->latest() // Ambil yang paling baru
-                                      ->first(); 
+                                          ->latest() 
+                                          ->first(); 
+
+            // ======================================================
+            // ✅ PERUBAHAN DI SINI: LOGIKA KALENDER UNTUK USER
+            // ======================================================
+            
+            // Ambil SEMUA pendaftaran yang disetujui (BUKAN HANYA user_id yang login)
+            $semuaPendaftaran = Pendaftaran::where('status', 'approved')
+                                        ->whereNotNull(['tanggal_mulai', 'tanggal_selesai'])
+                                        ->get();
+
+            // Gunakan flatMap untuk membuat DUA event (mulai & selesai)
+            $calendarEvents = $semuaPendaftaran->flatMap(function ($p) {
+                return [
+                    // Event 1: Tanggal Mulai
+                    [
+                        // Tampilkan nama pendaftar, bukan "Magang Anda"
+                        'title' => $p->nama_pendaftar . ' (Mulai)', 
+                        'start' => $p->tanggal_mulai,
+                        'display' => 'list-item',
+                        'extendedProps' => ['icon' => 'play']
+                    ],
+                    // Event 2: Tanggal Selesai
+                    [
+                        // Tampilkan nama pendaftar, bukan "Magang Anda"
+                        'title' => $p->nama_pendaftar . ' (Selesai)',
+                        'start' => $p->tanggal_selesai,
+                        'display' => 'list-item',
+                        'extendedProps' => ['icon' => 'flag']
+                    ]
+                ];
+            });
+            // --- AKHIR PERUBAHAN ---
+
 
             // Kembalikan view dashboard user
             return view('dashboard', [
-                'role' => 'user', // <-- KIRIM ROLE KE VIEW
-                'pendaftaran' => $pendaftaran, // Kirim data pendaftarannya
+                'role' => 'user', 
+                'pendaftaran' => $pendaftaran, 
+                'calendarEvents' => $calendarEvents, // Kirim data kalender yang sudah berisi SEMUA pendaftar
             ]);
         }
 
-        // Fallback jika ada role aneh (seharusnya tidak terjadi)
+        // Fallback jika ada role aneh
         Auth::logout();
         return redirect()->route('login');
     }

@@ -53,7 +53,14 @@
                                     <dt class="text-gray-400">Asal Kampus</dt>
                                     <dd class="text-white font-medium">{{ $pendaftaran->asal_kampus }}</dd>
                                 </div>
+
+                                {{-- ✅ TAMBAHAN BARU: PRODI/JURUSAN --}}
                                 <div>
+                                    <dt class="text-gray-400">Prodi / Jurusan</dt>
+                                    <dd class="text-white font-medium">{{ $pendaftaran->prodi ?? '-' }}</dd>
+                                </div>
+
+                                <div class="md:col-span-2">
                                     <dt class="text-gray-400">Periode Magang</dt>
                                     <dd class="text-white font-medium">
                                         {{ \Carbon\Carbon::parse($pendaftaran->tanggal_mulai)->format('d M Y') }} - 
@@ -85,7 +92,7 @@
                     </div>
 
                     {{-- Box Form Tindakan Admin --}}
-                    @if(in_array($pendaftaran->status, ['pending', 'conditional']))
+                    @if(auth()->user()->isAdmin() && in_array($pendaftaran->status, ['pending', 'conditional']))
                     <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                         <form method="POST" action="{{ route('daftar.updateStatus', $pendaftaran) }}">
                             @csrf
@@ -126,9 +133,8 @@
                         <div class="p-6">
                             <h3 class="claude-title text-xl text-white mb-4">Pas Foto</h3>
                             <a href="{{ asset('storage/' . $pendaftaran->pas_foto) }}" target="_blank">
-                                {{-- ✅ PERUBAHAN UKURAN FOTO DI SINI --}}
                                 <img src="{{ asset('storage/' . $pendaftaran->pas_foto) }}" alt="Pas Foto {{ $pendaftaran->nama_pendaftar }}" 
-                 class="h-36 w-full rounded-lg object-cover">
+                                     class="max-w-xs mx-auto w-full rounded-lg object-cover">
                             </a>
                             <a href="{{ route('daftar.downloadFile', [$pendaftaran, 'pas_foto']) }}" 
                                class="filter-btn filter-btn-secondary mt-4 w-full justify-center">
@@ -141,10 +147,6 @@
                     <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                         <div class="p-6">
                             <h3 class="claude-title text-xl text-white mb-4">Surat Permohonan</h3>
-                            
-                            {{-- ✅ PREVIEW PDF DIHILANGKAN --}}
-                            
-                            {{-- ✅ mt-4 DIHILANGKAN DARI TOMBOL DOWNLOAD --}}
                             <a href="{{ route('daftar.downloadFile', [$pendaftaran, 'surat_permohonan']) }}" 
                                class="filter-btn filter-btn-secondary w-full justify-center">
                                 <i class="fas fa-download"></i> Download Surat Permohonan
@@ -156,10 +158,6 @@
                     <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                         <div class="p-6">
                             <h3 class="claude-title text-xl text-white mb-4">Surat Keterangan Kampus</h3>
-                            
-                            {{-- ✅ PREVIEW PDF DIHILANGKAN --}}
-
-                            {{-- ✅ mt-4 DIHILANGKAN DARI TOMBOL DOWNLOAD --}}
                             <a href="{{ route('daftar.downloadFile', [$pendaftaran, 'surat_kampus']) }}" 
                                class="filter-btn filter-btn-secondary w-full justify-center">
                                 <i class="fas fa-download"></i> Download Surat Kampus

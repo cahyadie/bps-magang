@@ -9,14 +9,41 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script>
+        if (localStorage.getItem('_x_expanded') === 'false') {
+            document.documentElement.classList.add('sidebar-collapsed-on-load');
+        }
+    </script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&display=swap');
+
+        @media (min-width: 1024px) {
+            html.sidebar-collapsed-on-load aside {
+                width: 5rem !important; /* w-20 */
+            }
+            html.sidebar-collapsed-on-load main {
+                padding-left: 5rem !important; /* pl-20 */
+            }
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
 
         html {
             background-color: #1a1a1a;
             overscroll-behavior: none;
             /* <-- Tambahkan baris ini */
+        }
+
+        html.sidebar-collapsed-on-load aside {
+            width: 5rem !important; /* w-20 */
+        }
+
+        html.sidebar-collapsed-on-load main {
+            padding-left: 5rem !important; /* pl-20 */
         }
 
 
@@ -352,7 +379,6 @@
             align-items: center;
             gap: 0.375rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            animation: pulse 2s ease-in-out infinite;
         }
 
         @keyframes pulse {
@@ -1262,29 +1288,45 @@
     </style>
 </head>
 
-{{-- Beri kelas 'view-grid' sebagai default --}}
+<body class="font-sans antialiased view-grid"
+    x-data="{ expanded: JSON.parse(localStorage.getItem('_x_expanded') ?? 'true'), mobileOpen: false }"
+    x-init="document.documentElement.classList.remove('sidebar-collapsed-on-load')"
+    :class="{ 'overflow-hidden': mobileOpen }">
 
-<body class="font-sans antialiased view-grid" x-data="{ expanded: true }">
+    {{-- ✅ HEADER KHUSUS MOBILE (LG:HIDDEN) --}}
+    {{-- Urutan diubah: Tombol dulu, baru Judul. justify-between -> justify-start gap-4 --}}
+    <header x-cloak
+        class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-start gap-4 h-16 px-6 bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-[#3a3a3a]">
+        <button @click="mobileOpen = true" class="text-gray-300 p-2 -ml-2 rounded-lg hover:bg-white/5 hover:text-white">
+            <i class="fas fa-bars w-5 text-center"></i>
+        </button>
+        <h1 class="claude-title text-xl text-white font-semibold">
+            MagNet
+        </h1>
+    </header>
 
     <div class="flex">
         @include('layouts.sidebar')
 
-        {{-- 
-          2. Ubah <main> agar padding-left-nya dinamis
-             pl-64 (saat expanded) menjadi pl-20 (saat terlipat)
-             Tambahkan juga transisi untuk animasi yang mulus.
-        --}}
-        <main class="flex-1 transition-all duration-500 ease-in-out" 
-              :class="expanded ? 'pl-64' : 'pl-20'">
-            
+        <main class="flex-1 transition-all duration-500 ease-in-out pt-16 lg:pt-0"
+            :class="expanded ? 'lg:pl-64' : 'lg:pl-20'">
+
             {{ $slot }}
         </main>
     </div>
 
-    {{-- 3. Tambahkan script Alpine.js di sini --}}
-    <script src="//unpkg.com/alpinejs" defer></script>
+    {{-- OVERLAY MENU MOBILE --}}
+    <div x-cloak x-show="mobileOpen" @click="mobileOpen = false"
+         x-transition:enter="transition-opacity ease-linear duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity ease-linear duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 z-40 lg:hidden">
+    </div>
 
-    {{-- Tempat untuk script khusus halaman --}}
+    {{-- Script Alpine sudah ada di sidebar.blade.php --}}
     @stack('scripts')
 </body>
 
