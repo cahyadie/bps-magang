@@ -1,18 +1,15 @@
-{{-- resources/views/magang/index.blade.php --}}
-
-<x-main-layout>
-
+<x-app-layout>
     <div class="claude-container">
 
         {{-- Header Section --}}
         <div class="border-b border-[#3a3a3a] header-section">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+
                     {{-- Judul dan View Toggler --}}
                     <div class="flex items-center gap-4">
-                        <h2 class="claude-title text-2xl text-white">
-                            Data Magang
-                        </h2>
+                        <h2 class="claude-title text-2xl text-white">Data Magang</h2>
+
                         <div class="hidden sm:flex items-center bg-black/20 rounded-lg p-1 border border-[#3a3a3a]">
                             <button id="view-grid-btn" class="view-toggle-btn active" title="Tampilan Grid">
                                 <i class="fas fa-th"></i>
@@ -23,6 +20,7 @@
                         </div>
                     </div>
 
+                    {{-- Tombol Tambah (Admin Only) --}}
                     @if (auth()->user()->isAdmin())
                         <a href="{{ route('magang.create') }}"
                             class="claude-button px-5 py-2.5 inline-flex items-center gap-2 w-full sm:w-auto justify-center">
@@ -35,38 +33,34 @@
         </div>
 
         <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6">
+            {{-- Alert Success --}}
             @if (session('success'))
                 <div class="success-alert mb-6">
                     <span>{{ session('success') }}</span>
                 </div>
             @endif
 
+            {{-- Filter Container --}}
             <div class="filter-container">
                 <form method="GET" action="{{ route('magang.index') }}" class="filter-form" id="filterForm">
                     <div class="filter-grid">
-                        {{-- Filter Search --}}
-                        <div class="filter-item search-item">
-                            <div class="filter-label">
-                                <i class="fas fa-search"></i>
-                                <span>Cari Peserta</span>
-                            </div>
-                            <div style="position: relative;">
+
+                        {{-- Filter: Search --}}
+                        <div class="filter-item">
+                            <div class="filter-label"><i class="fas fa-search"></i> <span>Cari Peserta</span></div>
+                            <div class="relative">
                                 <input type="text" name="search" id="searchInput" class="filter-input"
                                     placeholder="Cari berdasarkan nama..." value="{{ request('search') }}"
                                     autocomplete="off">
-                                <div id="searchLoader" class="search-loader" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
+                                <div id="searchLoader" class="search-loader" style="display: none;"><i
+                                        class="fas fa-spinner fa-spin"></i></div>
                             </div>
                         </div>
 
-                        {{-- Filter Kampus --}}
+                        {{-- Filter: Kampus --}}
                         <div class="filter-item">
-                            <div class="filter-label">
-                                <i class="fas fa-university"></i>
-                                <span>Universitas</span>
-                            </div>
-                            <div style="position: relative;">
+                            <div class="filter-label"><i class="fas fa-university"></i> <span>Universitas</span></div>
+                            <div class="relative">
                                 <select name="kampus" id="kampusSelect" class="filter-select">
                                     <option value="">Semua Kampus</option>
                                     @foreach($kampusList as $kampus)
@@ -75,33 +69,27 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <div id="kampusLoader" class="select-loader" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
+                                <div id="kampusLoader" class="select-loader" style="display: none;"><i
+                                        class="fas fa-spinner fa-spin"></i></div>
                             </div>
                         </div>
 
-                        {{-- ✅ FILTER TAHUN DITAMBAHKAN --}}
+                        {{-- Filter: Tahun --}}
                         <div class="filter-item">
-                            <div class="filter-label">
-                                <i class="fas fa-calendar"></i>
-                                <span>Tahun</span>
-                            </div>
-                            <div style="position: relative;">
+                            <div class="filter-label"><i class="fas fa-calendar"></i> <span>Tahun</span></div>
+                            <div class="relative">
                                 <select name="year" id="yearSelect" class="filter-select">
                                     <option value="all" {{ $selectedYear == 'all' ? 'selected' : '' }}>Semua Tahun
                                     </option>
                                     @foreach($availableYears as $year)
                                         @if($year)
-                                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
-                                                {{ $year }}
+                                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>{{ $year }}
                                             </option>
                                         @endif
                                     @endforeach
                                 </select>
-                                <div id="yearLoader" class="select-loader" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
+                                <div id="yearLoader" class="select-loader" style="display: none;"><i
+                                        class="fas fa-spinner fa-spin"></i></div>
                             </div>
                         </div>
 
@@ -109,8 +97,7 @@
                         <div class="filter-item filter-actions">
                             @if(request('search') || request('kampus') || $selectedYear != 'all')
                                 <a href="{{ route('magang.index') }}" class="filter-btn filter-btn-secondary">
-                                    <i class="fas fa-times"></i>
-                                    <span>Reset</span>
+                                    <i class="fas fa-times"></i> <span>Reset</span>
                                 </a>
                             @endif
                         </div>
@@ -120,337 +107,203 @@
                     @if(request('search') || request('kampus') || $selectedYear != 'all')
                         <div class="filter-info">
                             <i class="fas fa-info-circle"></i>
-                            <span>
-                                Menampilkan hasil untuk:
-                                @if(request('search'))
-                                    <strong>"{{ request('search') }}"</strong>
-                                @endif
-                                @if(request('search') && (request('kampus') || $selectedYear != 'all'))
-                                    ,
-                                @endif
-                                @if(request('kampus'))
-                                    <strong>{{ request('kampus') }}</strong>
-                                @endif
-                                @if(request('kampus') && $selectedYear != 'all')
-                                    ,
-                                @endif
-                                @if($selectedYear != 'all')
-                                    <strong>Tahun {{ $selectedYear }}</strong>
-                                @endif
+                            <span>Menampilkan hasil untuk:
+                                <strong>
+                                    {{ implode(', ', array_filter([
+                            request('search') ? '"' . request('search') . '"' : null,
+                            request('kampus'),
+                            $selectedYear != 'all' ? 'Tahun ' . $selectedYear : null
+                        ])) }}
+                                </strong>
                             </span>
                         </div>
                     @endif
                 </form>
             </div>
 
+            {{-- Hasil Data --}}
             @if (count($magangs) > 0)
                 <div id="magang-container" class="flex overflow-x-auto gap-6 py-4 hide-scrollbar">
                     @foreach ($magangs as $magang)
                         <div class="card-wrapper flex-shrink-0 w-80 sm:w-96">
-                            <div class="magang-card" @if ($magang->foto)
-                            style="background-image: url('{{ asset('storage/' . $magang->foto) }}');" @else
-                                    style="background: linear-gradient(135deg, #{{ substr(md5($magang->nama), 0, 6) }} 0%, #{{ substr(md5($magang->nama), 6, 6) }} 100%);"
-                                @endif>
+                            {{-- Logic Background --}}
+                            @php
+                                $bgStyle = $magang->foto
+                                    ? "background-image: url('" . asset('storage/' . $magang->foto) . "');"
+                                    : "background: linear-gradient(135deg, #" . substr(md5($magang->nama), 0, 6) . " 0%, #" . substr(md5($magang->nama), 6, 6) . " 100%);";
+                            @endphp
 
+                            <div class="magang-card" style="{{ $bgStyle }}">
+                                {{-- Avatar --}}
                                 @if (!$magang->foto)
-                                    <div class="initial-avatar">
-                                        {{ $magang->initials }}
-                                    </div>
+                                    <div class="initial-avatar">{{ $magang->initials }}</div>
                                 @endif
 
                                 <div class="card-overlay"></div>
-                                <div class="card-blur-bottom"></div>
 
                                 <div class="card-content">
-                                    <div class="card-header">
+                                    
+                                    {{-- HEADER: Nama & Status --}}
+                                   <div class="card-header">
                                         <div class="card-name">{{ $magang->nama }}</div>
+                                        
+                                        {{-- LOGIC SAFEGUARD: Menggunakan Null Coalescing Operator (??) --}}
                                         @php
-                                            $now = \Carbon\Carbon::now();
-                                            $mulai = \Carbon\Carbon::parse($magang->tanggal_mulai);
-                                            $selesai = \Carbon\Carbon::parse($magang->tanggal_selesai);
-                                            if ($now->lt($mulai)) {
-                                                $statusClass = 'belum';
-                                                $statusText = 'Belum Mulai';
-                                            } elseif ($now->between($mulai, $selesai)) {
-                                                $statusClass = 'aktif';
-                                                $statusText = 'Aktif';
-                                            } else {
-                                                $statusClass = 'selesai';
-                                                $statusText = 'Selesai';
-                                            }
+                                            $status = $magang->status_context ?? [
+                                                'class' => 'bg-gray-500 text-white', 
+                                                'text' => 'N/A'
+                                            ];
                                         @endphp
-                                        <div class="status-badge {{ $statusClass }}">
+
+                                        <div class="status-badge {{ $status['class'] }}">
                                             <span class="status-dot"></span>
-                                            {{ $statusText }}
+                                            {{ $status['text'] }}
                                         </div>
                                     </div>
 
-                                    <div class="card-spacer"></div>
-
+                                    {{-- FOOTER: Info, Tombol Aksi & Sosmed --}}
                                     <div class="card-footer">
+                                        
+                                        {{-- Info Text --}}
                                         <div class="card-info">
                                             <div class="info-item">
                                                 <div class="info-label">Asal Kampus</div>
-                                                <div class="info-value">{{ $magang->asal_kampus }}</div>
+                                                <div class="info-value">{{ Str::limit($magang->asal_kampus, 30) }}</div>
                                             </div>
                                             <div class="info-item">
                                                 <div class="info-label">Periode</div>
                                                 <div class="info-value">
                                                     {{ $magang->periode_bulan ?? 'N/A' }} bulan
-                                                    <span class="text-xs opacity-75">
-                                                        ({{ $mulai->format('d/m/y') }} - {{ $selesai->format('d/m/y') }})
+                                                    <span class="text-xs opacity-75 block font-normal">
+                                                        ({{ \Carbon\Carbon::parse($magang->tanggal_mulai)->format('d M Y') }} -
+                                                        {{ \Carbon\Carbon::parse($magang->tanggal_selesai)->format('d M Y') }})
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="card-actions-row">
+                                        {{-- Wrapper Tombol & Sosmed (Sejajar) --}}
+                                        <div class="card-actions-wrapper">
+                                            
+                                            {{-- Tombol Aksi (Kiri) --}}
                                             <div class="card-actions">
-                                                <a href="{{ route('magang.show', $magang) }}" class="action-btn detail"
-                                                    title="Detail">
+                                                <a href="{{ route('magang.show', $magang) }}" class="action-btn detail" title="Detail">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
 
                                                 @if(auth()->user()->isAdmin() || (isset($magang->user_id) && $magang->user_id == auth()->id()))
-                                                    <a href="{{ route('magang.edit', $magang) }}" class="action-btn edit"
-                                                        title="Edit">
-                                                        <i class="fas fa-pencil"></i>
+                                                    <a href="{{ route('magang.edit', $magang) }}" class="action-btn edit" title="Edit">
+                                                        <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                 @endif
 
                                                 @if(auth()->user()->isAdmin())
-                                                    <form action="{{ route('magang.destroy', $magang) }}" method="POST"
-                                                        class="inline-block"
-                                                        onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="action-btn delete" title="Hapus">
+                                                    {{-- [MODIFIKASI] Tombol Delete dengan Trigger Modal --}}
+                                                    <form id="delete-form-{{ $magang->id }}" action="{{ route('magang.destroy', $magang) }}" method="POST" class="inline-flex m-0 p-0">
+                                                        @csrf @method('DELETE')
+                                                        {{-- Perhatikan class 'trigger-delete-modal' dan 'data-form-id' --}}
+                                                        <button type="button" 
+                                                                class="action-btn delete trigger-delete-modal" 
+                                                                data-form-id="delete-form-{{ $magang->id }}"
+                                                                title="Hapus">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
                                                 @endif
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
 
-                                @if ($magang->whatsapp || $magang->instagram || $magang->tiktok)
-                                    <div class="card-socials">
-                                        @if ($magang->whatsapp && auth()->check() && auth()->user()->role == 'admin')
-                                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}"
-                                                target="_blank" class="social-icon-link" title="WhatsApp">
-                                                <i class="fab fa-whatsapp"></i>
-                                            </a>
-                                        @endif
-                                        @if ($magang->instagram)
-                                            <a href="https://instagram.com/{{ ltrim($magang->instagram, '@') }}" target="_blank"
-                                                class="social-icon-link" title="Instagram">
-                                                <i class="fab fa-instagram"></i>
-                                            </a>
-                                        @endif
-                                        @if ($magang->tiktok)
-                                            <a href="https://tiktok.com/{{ ltrim($magang->tiktok, '@') }}" target="_blank"
-                                                class="social-icon-link" title="TikTok">
-                                                <i class="fab fa-tiktok"></i>
-                                            </a>
-                                        @endif
-                                    </div>
-                                @endif
+                                            {{-- Social Links (Kanan) --}}
+                                            <div class="card-socials">
+                                                @if ($magang->whatsapp && auth()->user()->isAdmin())
+                                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}" 
+                                                    target="_blank" class="social-icon-link wa" title="WhatsApp">
+                                                        <i class="fab fa-whatsapp"></i>
+                                                    </a>
+                                                @endif
+
+                                                @if ($magang->instagram)
+                                                    <a href="https://instagram.com/{{ ltrim($magang->instagram, '@') }}" 
+                                                    target="_blank" class="social-icon-link ig" title="Instagram">
+                                                        <i class="fab fa-instagram"></i>
+                                                    </a>
+                                                @endif
+
+                                                @if ($magang->tiktok)
+                                                    <a href="https://tiktok.com/{{ ltrim($magang->tiktok, '@') }}" 
+                                                    target="_blank" class="social-icon-link tt" title="TikTok">
+                                                        <i class="fab fa-tiktok"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
+
+                                        </div> {{-- End Actions Wrapper --}}
+                                    </div> {{-- End Card Footer --}}
+                                </div>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @else
+                {{-- Empty State --}}
                 <div class="empty-state mt-6">
                     @if(request('search') || request('kampus') || $selectedYear != 'all')
-                        <i class="fas fa-search" style="font-size: 4rem; color: #4a4a4a; margin-bottom: 1rem;"></i>
-                        <h3 style="color: white; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">
-                            Tidak Ada Hasil
-                        </h3>
-                        <p style="color: #9ca3af; margin-bottom: 2rem;">
-                            Tidak ditemukan data dengan kriteria pencarian tersebut
-                        </p>
+                        <i class="fas fa-search text-6xl text-[#4a4a4a] mb-4"></i>
+                        <h3 class="text-white text-xl font-semibold mb-2">Tidak Ada Hasil</h3>
+                        <p class="text-gray-400 mb-8">Tidak ditemukan data dengan kriteria pencarian tersebut</p>
                         <a href="{{ route('magang.index') }}" class="claude-button px-5 py-2.5">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Kembali ke Semua Data</span>
+                            <i class="fas fa-arrow-left"></i> Kembali ke Semua Data
                         </a>
                     @else
-                        <svg class="mx-auto h-12 w-12 text-[#5a5a5a] mb-4" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <p class="text-[#9ca3af] text-lg">Belum ada data magang</p>
-                        <p class="text-[#6a6a6a] text-sm mt-2">
-                            @if (auth()->user()->isAdmin())
-                                Klik tombol "Tambah Data" di atas untuk mulai menambahkan data
-                            @else
-                                Belum ada data yang ditambahkan oleh Admin
-                            @endif
-                        </p>
+                        <i class="fas fa-folder-open text-6xl text-[#5a5a5a] mb-4"></i>
+                        <p class="text-gray-400 text-lg">Belum ada data magang</p>
                     @endif
                 </div>
             @endif
 
+            {{-- Pagination --}}
             @if ($magangs->hasPages())
                 <div class="mt-8">
                     {{ $magangs->appends(request()->query())->links() }}
                 </div>
             @endif
         </div>
+        
+        {{-- [MODIFIKASI] HTML Custom Modal --}}
+        <div id="deleteModal" class="fixed inset-0 z-[9999] hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
+            
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <div class="relative transform overflow-hidden rounded-2xl bg-[#2a2a2a] border border-[#4a4a4a] text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-sm opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" id="modalPanel">
+                        <div class="p-6">
+                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-900/20 mb-5 border border-red-900/50">
+                                <i class="fas fa-trash-alt text-3xl text-red-500"></i>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="text-xl font-bold leading-6 text-white" id="modal-title">Hapus Data?</h3>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-400">Data ini akan dihapus permanen dan tidak dapat dikembalikan. Yakin ingin melanjutkan?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-[#222] px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2 border-t border-[#333]">
+                            <button type="button" id="confirmDeleteBtn" class="inline-flex w-full justify-center rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:w-auto transition-colors duration-200">
+                                Ya, Hapus
+                            </button>
+                            <button type="button" id="cancelDeleteBtn" class="mt-3 inline-flex w-full justify-center rounded-lg bg-[#3a3a3a] px-3 py-2 text-sm font-semibold text-gray-300 shadow-sm ring-1 ring-inset ring-gray-600 hover:bg-[#4a4a4a] hover:text-white sm:mt-0 sm:w-auto transition-colors duration-200">
+                                Batal
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- End Custom Modal --}}
+
     </div>
 
-    {{-- ✅ SCRIPT DIPERBARUI DENGAN FILTER TAHUN --}}
+    {{-- Script External --}}
     @push('scripts')
-        <script>
-            function initializeAppLogic() {
-                const searchInput = document.getElementById('searchInput');
-                const kampusSelect = document.getElementById('kampusSelect');
-                const yearSelect = document.getElementById('yearSelect'); // ✅ Tambah referensi
-                const searchLoader = document.getElementById('searchLoader');
-                const kampusLoader = document.getElementById('kampusLoader');
-                const yearLoader = document.getElementById('yearLoader'); // ✅ Tambah loader
-                const resultsContainer = document.getElementById('magang-container');
-                const gridBtn = document.getElementById('view-grid-btn');
-                const rowBtn = document.getElementById('view-row-btn');
-                const body = document.body;
-
-                // View Toggle
-                if (resultsContainer) {
-                    resultsContainer.addEventListener('wheel', function (e) {
-                        if (body.classList.contains('view-row') && e.deltaY != 0) {
-                            e.preventDefault();
-                            resultsContainer.scrollLeft += e.deltaY * 1;
-                        }
-                    });
-                }
-
-                if (gridBtn && rowBtn) {
-                    gridBtn.addEventListener('click', function () {
-                        body.classList.add('view-grid');
-                        body.classList.remove('view-row');
-                        gridBtn.classList.add('active');
-                        rowBtn.classList.remove('active');
-                    });
-
-                    rowBtn.addEventListener('click', function () {
-                        body.classList.add('view-row');
-                        body.classList.remove('view-grid');
-                        rowBtn.classList.add('active');
-                        gridBtn.classList.remove('active');
-                    });
-                }
-
-                let searchTimeout;
-
-                // ✅ FUNGSI FILTER DIPERBARUI DENGAN PARAMETER TAHUN
-                function performFilter() {
-                    const currentSearchInput = document.getElementById('searchInput');
-                    const currentKampusSelect = document.getElementById('kampusSelect');
-                    const currentYearSelect = document.getElementById('yearSelect');
-                    if (!currentSearchInput || !currentKampusSelect || !currentYearSelect) return;
-                    const searchValue = currentSearchInput.value;
-                    const kampusValue = currentKampusSelect.value;
-                    const yearValue = currentYearSelect.value;
-                    // ✅ Tampilkan loader HANYA jika request > 300ms
-                    let loaderTimeout = setTimeout(() => {
-                        if (searchLoader) searchLoader.style.display = 'flex';
-                        if (kampusLoader) kampusLoader.style.display = 'flex';
-                        if (yearLoader) yearLoader.style.display = 'flex';
-                    }, 300); // Delay 300ms sebelum tampil
-                    const params = new URLSearchParams();
-                    if (searchValue) params.append('search', searchValue);
-                    if (kampusValue) params.append('kampus', kampusValue);
-                    if (yearValue && yearValue !== 'all') params.append('year', yearValue);
-                    fetch(`{{ route('magang.index') }}?${params.toString()}`, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'text/html'
-                        }
-                    })
-                        .then(response => response.text())
-                        .then(html => {
-                            // ✅ Batalkan loader jika request cepat
-                            clearTimeout(loaderTimeout);
-                            if (searchLoader) searchLoader.style.display = 'none';
-                            if (kampusLoader) kampusLoader.style.display = 'none';
-                            if (yearLoader) yearLoader.style.display = 'none';
-                            const parser = new DOMParser();
-                            const doc = parser.parseFromString(html, 'text/html');
-                            const newContainer = doc.getElementById('magang-container');
-                            const oldContainer = document.getElementById('magang-container');
-
-                            if (newContainer && oldContainer) {
-                                oldContainer.innerHTML = newContainer.innerHTML;
-                            } else {
-                                const newPageContent = doc.querySelector('.claude-container');
-                                if (newPageContent) {
-                                    document.querySelector('.claude-container').innerHTML = newPageContent.innerHTML;
-                                }
-                            }
-                            const newFilterInfo = doc.querySelector('.filter-info');
-                            const oldFilterInfo = document.querySelector('.filter-info');
-
-                            if (newFilterInfo) {
-                                if (oldFilterInfo) {
-                                    oldFilterInfo.innerHTML = newFilterInfo.innerHTML;
-                                } else {
-                                    document.querySelector('.filter-form').appendChild(newFilterInfo);
-                                }
-                            } else if (oldFilterInfo) {
-                                oldFilterInfo.remove();
-                            }
-                            const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-                            window.history.pushState({}, '', newUrl);
-                            initializeAppLogic();
-                        })
-                        .catch(error => {
-                            console.error('Filter error:', error);
-                            clearTimeout(loaderTimeout);
-                            if (searchLoader) searchLoader.style.display = 'none';
-                            if (kampusLoader) kampusLoader.style.display = 'none';
-                            if (yearLoader) yearLoader.style.display = 'none';
-                        });
-                }
-
-                // Event Listeners
-                if (searchInput && !searchInput.dataset.listenerAttached) {
-                    searchInput.addEventListener('input', function () {
-                        clearTimeout(searchTimeout);
-                        searchTimeout = setTimeout(performFilter, 800);
-                    });
-                    searchInput.dataset.listenerAttached = 'true';
-                }
-
-                if (kampusSelect && !kampusSelect.dataset.listenerAttached) {
-                    kampusSelect.addEventListener('change', performFilter);
-                    kampusSelect.dataset.listenerAttached = 'true';
-                }
-
-                // ✅ EVENT LISTENER UNTUK FILTER TAHUN
-                if (yearSelect && !yearSelect.dataset.listenerAttached) {
-                    yearSelect.addEventListener('change', performFilter);
-                    yearSelect.dataset.listenerAttached = 'true';
-                }
-
-                // Auto-hide success alert
-                const successAlert = document.querySelector('.success-alert');
-                if (successAlert) {
-                    setTimeout(() => {
-                        successAlert.classList.add('fade-out');
-                        setTimeout(() => {
-                            if (successAlert.parentElement) {
-                                successAlert.parentElement.remove();
-                            } else {
-                                successAlert.remove();
-                            }
-                        }, 500);
-                    }, 3000);
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', initializeAppLogic);
-        </script>
+        <script src="{{ asset('js/page-magang.js') }}"></script>
     @endpush
-
-</x-main-layout>
+</x-app-layout>

@@ -1,158 +1,180 @@
+@php
+    $baseNavLink = 'flex items-center gap-3 py-3 mx-2 rounded-lg text-sm font-medium transition-all duration-200';
+    $activeLink  = 'bg-[#d97757]/20 text-[#e88968]';
+    $inactiveLink = 'text-gray-300 hover:bg-white/5 hover:text-white';
+@endphp
+
 <aside
-    class="flex-shrink-0 bg-[#1a1a1a] border-r border-[#3a3a3a] flex flex-col h-screen fixed top-0 left-0 z-50 transition-all duration-500 ease-in-out w-64 transform -translate-x-full lg:translate-x-0 lg:w-auto"
+    class="flex-shrink-0 bg-[#1a1a1a] border-r border-[#3a3a3a] flex flex-col h-dvh fixed top-0 left-0 z-50 transition-all duration-500 ease-in-out w-64 transform -translate-x-full lg:translate-x-0 lg:w-auto"
     :class="{ 
-        'translate-x-0': mobileOpen,  {{-- Tampilkan sidebar saat mobileOpen = true --}}
-        'lg:w-64': expanded,          {{-- Lebar desktop saat terbuka --}}
-        'lg:w-20': !expanded          {{-- Lebar desktop saat terlipat --}}
+        'translate-x-0': mobileOpen,   
+        'lg:w-64': expanded,           
+        'lg:w-20': !expanded           
     }">
 
-    {{-- HEADER SIDEBAR --}}
-    <div class="h-16 flex items-center border-b border-[#3a3a3a] flex-shrink-0 px-4">
-
-        {{-- Container Utama: Mengelola tata letak header --}}
+    {{-- 
+        BAGIAN 1: HEADER SIDEBAR
+    --}}
+    <div class="h-20 flex items-center border-b border-[#3a3a3a] flex-shrink-0 px-4 transition-all duration-300">
         <div class="flex items-center w-full relative">
 
-            {{-- 1. Logo dan Nama: Selalu tampil di mobile, tampil saat expanded di desktop --}}
+            {{-- Logo & Brand Name --}}
             <div class="flex items-center gap-3 overflow-hidden transition-all duration-300"
-                :class="expanded ? 'flex-shrink-0' : 'lg:hidden'">
-
+                 :class="expanded ? 'flex-shrink-0' : 'lg:hidden'">
+                
                 <img src="{{ asset('images/Magnet.png') }}" alt="Logo MagNet"
-                    class="h-8 w-auto flex-shrink-0 transition-opacity duration-500">
+                     class="h-10 w-auto flex-shrink-0 transition-opacity duration-500">
 
-                {{-- FIX: Menggunakan lg:opacity-0 dan lg:max-w-0 agar tidak berlaku di mobile --}}
                 <h1 class="claude-title text-xl text-white font-semibold whitespace-nowrap overflow-hidden transition-all duration-200"
                     :class="expanded ? 'opacity-100 max-w-xs' : 'lg:opacity-0 lg:max-w-0'">
                     MagNet
                 </h1>
             </div>
 
-            {{-- 2. Tombol Close (X) - HANYA TAMPIL DI MOBILE (lg:hidden) --}}
+            {{-- Tombol Close (Mobile Only) --}}
             <button @click="mobileOpen = false"
-                class="text-gray-300 p-2 rounded-lg hover:bg-white/5 hover:text-white transition-colors lg:hidden ml-auto">
+                    class="text-gray-300 p-2 rounded-lg hover:bg-white/5 hover:text-white transition-colors lg:hidden ml-auto">
                 <i class="fas fa-times w-5 text-center"></i>
             </button>
 
-
-            {{-- 3. Tombol Burger - HANYA TAMPIL DI DESKTOP (hidden lg:block) --}}
+            {{-- Tombol Hamburger (Desktop Only) --}}
             <button @click="expanded = !expanded; localStorage.setItem('_x_expanded', expanded)"
-                class="text-gray-300 p-2 rounded-lg hover:bg-white/5 hover:text-white transition-colors hidden lg:block"
-                :class="expanded ? 'absolute right-0 top-1/2 transform -translate-y-1/2' : 'mx-auto w-full flex justify-center'">
+                    class="text-gray-300 p-2 rounded-lg hover:bg-white/5 hover:text-white transition-colors hidden lg:block"
+                    :class="expanded ? 'absolute right-0 top-1/2 transform -translate-y-1/2' : 'mx-auto w-full flex justify-center'">
                 <i class="fas fa-bars w-5 text-center"></i>
             </button>
         </div>
     </div>
 
-    {{-- NAVIGASI --}}
-    {{-- Link-link ini tidak perlu diubah. x-show="expanded" berfungsi di mobile (karena selalu 'expanded') dan desktop
+    {{-- 
+        BAGIAN 2: NAVIGASI MENU
     --}}
-    <nav class="flex-1 overflow-y-auto py-4 space-y-2">
+    <nav class="flex-1 overflow-y-auto py-6 space-y-2">
 
+        {{-- Menu: Dashboard --}}
         <a href="{{ route('dashboard') }}"
-            class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-            {{ request()->routeIs('dashboard') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Dashboard' : ''">
-
+           @class([$baseNavLink, $activeLink => request()->routeIs('dashboard'), $inactiveLink => !request()->routeIs('dashboard')])
+           :class="expanded ? 'px-4' : 'px-3 justify-center'" 
+           x-tooltip.right="!expanded ? 'Dashboard' : ''">
+            
             <i class="fas fa-home w-5 text-center flex-shrink-0"></i>
-
-            <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0">
+            
+            <span class="whitespace-nowrap" x-show="expanded" 
+                  x-transition:enter="transition ease-out duration-100 opacity-0" 
+                  x-transition:enter-end="opacity-100">
                 Dashboard
             </span>
         </a>
 
+        {{-- Menu: Pendaftaran Magang --}}
         <a href="{{ route('daftar.index') }}"
-            class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-            {{ request()->routeIs('daftar.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Pendaftaran Magang' : ''">
-
+           @class([$baseNavLink, $activeLink => request()->routeIs('daftar.*'), $inactiveLink => !request()->routeIs('daftar.*')])
+           :class="expanded ? 'px-4' : 'px-3 justify-center'" 
+           x-tooltip.right="!expanded ? 'Pendaftaran Magang' : ''">
+            
             <i class="fas fa-user-plus w-5 text-center flex-shrink-0"></i>
-
-            <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0">
+            
+            <span class="whitespace-nowrap" x-show="expanded" 
+                  x-transition:enter="transition ease-out duration-100 opacity-0" 
+                  x-transition:enter-end="opacity-100">
                 Pendaftaran Magang
             </span>
         </a>
 
+        {{-- Menu: Data Magang --}}
         <a href="{{ route('magang.index') }}"
-            class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-            {{ (request()->routeIs('magang.index') || request()->routeIs('magang.show') || request()->routeIs('magang.edit')) ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Data Magang' : ''">
-
+           @class([$baseNavLink, $activeLink => request()->routeIs(['magang.index', 'magang.show', 'magang.edit']), $inactiveLink => !request()->routeIs(['magang.index', 'magang.show', 'magang.edit'])])
+           :class="expanded ? 'px-4' : 'px-3 justify-center'" 
+           x-tooltip.right="!expanded ? 'Data Magang' : ''">
+            
             <i class="fas fa-th w-5 text-center flex-shrink-0"></i>
-
-            <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                x-transition:leave-end="opacity-0">
+            
+            <span class="whitespace-nowrap" x-show="expanded" 
+                  x-transition:enter="transition ease-out duration-100 opacity-0" 
+                  x-transition:enter-end="opacity-100">
                 Data Magang
             </span>
         </a>
 
+        {{-- ========================================================== --}}
+        {{-- Menu: Manajemen User (HANYA UNTUK ADMIN) --}}
+        {{-- ========================================================== --}}
+        @if (auth()->user()->isAdmin())
+            <a href="{{ route('users.index') }}"
+               @class([$baseNavLink, $activeLink => request()->routeIs('users.*'), $inactiveLink => !request()->routeIs('users.*')])
+               :class="expanded ? 'px-4' : 'px-3 justify-center'" 
+               x-tooltip.right="!expanded ? 'Manajemen User' : ''">
+                
+                <i class="fas fa-users-cog w-5 text-center flex-shrink-0"></i>
+                
+                <span class="whitespace-nowrap" x-show="expanded" 
+                      x-transition:enter="transition ease-out duration-100 opacity-0" 
+                      x-transition:enter-end="opacity-100">
+                    Manajemen User
+                </span>
+            </a>
+        @endif
+
+        {{-- Menu: Profil Saya (Khusus Admin) --}}
         @if (auth()->user()->isAdmin())
             <a href="{{ route('profile.edit') }}"
-                class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-                                                    {{ request()->routeIs('profile.edit') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-                :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Profil Saya' : ''">
-
+               @class([$baseNavLink, $activeLink => request()->routeIs('profile.edit'), $inactiveLink => !request()->routeIs('profile.edit')])
+               :class="expanded ? 'px-4' : 'px-3 justify-center'" 
+               x-tooltip.right="!expanded ? 'Profil Saya' : ''">
+                
                 <i class="fas fa-user-circle w-5 text-center flex-shrink-0"></i>
-
-                <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
+                
+                <span class="whitespace-nowrap" x-show="expanded" 
+                      x-transition:enter="transition ease-out duration-100 opacity-0" 
+                      x-transition:enter-end="opacity-100">
                     Profil Saya
                 </span>
             </a>
         @endif
     </nav>
 
-    {{-- AREA USER & LOGOUT --}}
-    <div class="p-4 border-t border-[#3a3a3a] flex-shrink-0">
-
+    {{-- 
+        BAGIAN 3: USER FOOTER
+    --}}
+    <div class="p-5 border-t border-[#3a3a3a] flex-shrink-0">
+        
+        {{-- Info User --}}
         <div class="flex items-center" :class="expanded ? 'gap-3' : 'justify-center'">
-
-            <div
-                class="w-10 h-10 rounded-full bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold flex-shrink-0">
+            
+            <div class="w-10 h-10 rounded-full bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold flex-shrink-0">
                 {{ substr(auth()->user()->name, 0, 1) }}
             </div>
 
             <div class="overflow-hidden whitespace-nowrap" x-show="expanded"
-                x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-
+                 x-transition:enter="transition ease-out duration-100 opacity-0" 
+                 x-transition:enter-end="opacity-100">
+                
                 <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
 
                 @if (auth()->user()->isAdmin())
-                    <span
-                        style="background-color: rgba(220, 38, 38, 0.2); color: #f87171; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
-                        <i class="fas fa-crown" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>ADMIN
+                    <span class="bg-red-600/20 text-red-400 px-2 py-0.5 rounded-xl text-[0.7rem] font-semibold inline-flex items-center mt-1">
+                        <i class="fas fa-crown text-[0.625rem] mr-1"></i> ADMIN
                     </span>
                 @else
-                    <span
-                        style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
-                        <i class="fas fa-user" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>USER
+                    <span class="bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-xl text-[0.7rem] font-semibold inline-flex items-center mt-1">
+                        <i class="fas fa-user text-[0.625rem] mr-1"></i> USER
                     </span>
                 @endif
             </div>
         </div>
 
+        {{-- Tombol Logout --}}
         <form action="{{ route('logout') }}" method="POST" class="mt-4">
             @csrf
             <button type="submit"
-                class="w-full bg-gradient-to-r from-red-600/80 to-red-700/80 hover:from-red-600 hover:to-red-700 text-white py-2.5 rounded-lg font-medium transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-600/20 hover:shadow-red-600/30"
-                :class="expanded ? 'px-4' : 'px-2.5'">
-
+                    class="w-full bg-gradient-to-r from-red-600/80 to-red-700/80 hover:from-red-600 hover:to-red-700 text-white py-2.5 rounded-lg font-medium transition-all duration-300 inline-flex items-center justify-center gap-2 text-sm shadow-lg shadow-red-600/20 hover:shadow-red-600/30"
+                    :class="expanded ? 'px-4' : 'px-2.5'">
+                
                 <i class="fas fa-sign-out-alt w-5 text-center flex-shrink-0"></i>
-
-                <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
+                
+                <span class="whitespace-nowrap" x-show="expanded"
+                      x-transition:enter="transition ease-out duration-100 opacity-0" 
+                      x-transition:enter-end="opacity-100">
                     Logout
                 </span>
             </button>
@@ -160,12 +182,8 @@
     </div>
 </aside>
 
-{{-- Style untuk Tooltip (hanya relevan di desktop) --}}
 <style>
-    [x-tooltip] {
-        position: relative;
-    }
-
+    [x-tooltip] { position: relative; }
     @media (min-width: 1024px) {
         [x-tooltip]:hover::after {
             content: attr(x-tooltip);
@@ -185,9 +203,3 @@
         }
     }
 </style>
-
-{{--
-Script Alpine.js ditempatkan di sini.
-Script @alpinejs/persist sudah dihapus.
---}}
-<script src="//unpkg.com/alpinejs" defer></script>

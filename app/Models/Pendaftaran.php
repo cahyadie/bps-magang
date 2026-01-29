@@ -14,7 +14,11 @@ class Pendaftaran extends Model
     protected $fillable = [
         'user_id',
         'nama_pendaftar',
-        'email', 
+        'email',
+        'agama',
+        'provinsi',
+        'kabupaten',
+        'alamat',
         'surat_permohonan',
         'surat_kampus',
         'pas_foto',

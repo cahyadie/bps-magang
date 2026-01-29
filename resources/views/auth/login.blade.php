@@ -13,6 +13,7 @@
 
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            box-sizing: border-box;
         }
 
         .claude-title {
@@ -22,97 +23,74 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d1810 100%);
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Fallback color */
             color: #e8e8e8;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 1rem;
+            overflow-x: hidden; /* Prevent horizontal scroll */
             position: relative;
-            overflow-y: auto; /* Allow scroll if content exceeds screen */
-            flex-direction: column; /* Make sure content aligns properly on smaller screens */
         }
 
-        /* Animated Background Orbs */
-        .bg-orb {
+        /* --- VIDEO BACKGROUND STYLES --- */
+        .video-background {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: -1; /* Place behind everything */
+            overflow: hidden;
+            pointer-events: none; /* Prevent clicking on video */
+        }
+
+        .video-foreground,
+        .video-background iframe {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.15;
-            animation: float 20s ease-in-out infinite;
-        }
-
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #d97757;
-            top: -10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 350px;
-            height: 350px;
-            background: #d97757;
-            bottom: -10%;
-            right: -10%;
-            animation-delay: 7s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: #d97757;
             top: 50%;
             left: 50%;
+            width: 100vw;
+            height: 56.25vw; /* 16:9 Aspect Ratio (100 * 9 / 16) */
+            min-height: 100vh;
+            min-width: 177.77vh; /* 16:9 Aspect Ratio (100 * 16 / 9) */
             transform: translate(-50%, -50%);
-            animation-delay: 14s;
+            pointer-events: none;
         }
 
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
+        /* Overlay hitam transparan agar text tetap terbaca jelas */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Opacity overlay */
+            z-index: -1;
         }
+        /* ------------------------------- */
 
         /* Form Card with Animation */
         .form-card {
-            background-color: rgba(42, 42, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(217, 119, 87, 0.2);
+            background-color: rgba(42, 42, 42, 0.75); /* Lebih transparan */
+            backdrop-filter: blur(15px); /* Efek blur kaca */
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 24px;
             padding: 2.5rem;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 10;
             animation: slideUp 0.8s ease-out;
-            margin: 0 auto; /* Center the form card */
+            margin: 1rem;
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Logo Animation */
@@ -121,21 +99,14 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         /* Input Styles */
         .claude-input {
             background-color: rgba(45, 45, 45, 0.6);
-            border: 1px solid rgba(58, 58, 58, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e8e8e8;
             padding: 0.875rem 1rem;
             border-radius: 12px;
@@ -151,37 +122,20 @@
             transform: translateY(-2px);
         }
 
-        .claude-input::placeholder {
-            color: #6a6a6a;
-        }
+        .claude-input::placeholder { color: #888; }
 
-        .input-group {
-            animation: slideInLeft 0.6s ease-out both;
-        }
-
-        .input-group:nth-child(1) {
-            animation-delay: 0.4s;
-        }
-
-        .input-group:nth-child(2) {
-            animation-delay: 0.5s;
-        }
+        .input-group { animation: slideInLeft 0.6s ease-out both; }
+        .input-group:nth-child(1) { animation-delay: 0.4s; }
+        .input-group:nth-child(2) { animation-delay: 0.5s; }
 
         @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .claude-label {
             display: block;
-            color: #c4c4c4;
+            color: #d1d1d1;
             font-size: 0.875rem;
             font-weight: 500;
             margin-bottom: 0.5rem;
@@ -209,27 +163,13 @@
             box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4);
         }
 
-        .claude-button:active {
-            transform: translateY(0);
-        }
-
-        .button-container {
-            animation: slideInRight 0.6s ease-out 0.6s both;
-        }
+        .button-container { animation: slideInRight 0.6s ease-out 0.6s both; }
 
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Error Message */
         .error-message {
             color: #f87171;
             font-size: 0.875rem;
@@ -238,22 +178,11 @@
         }
 
         @keyframes shake {
-
-            0%,
-            100% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            75% {
-                transform: translateX(10px);
-            }
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
-        /* Link Styles */
         .link-forgot {
             color: #9ca3af;
             text-decoration: none;
@@ -261,126 +190,42 @@
             font-size: 0.875rem;
         }
 
-        .link-forgot:hover {
-            color: #d97757;
-            transform: translateX(-2px);
-        }
+        .link-forgot:hover { color: #d97757; }
 
-        /* Checkbox */
-        .remember-container {
-            animation: fadeIn 0.6s ease-out 0.7s both;
-        }
+        .remember-container { animation: fadeIn 0.6s ease-out 0.7s both; }
 
         input[type="checkbox"] {
             width: 1.125rem;
             height: 1.125rem;
             border-radius: 6px;
-            border: 1px solid #3a3a3a;
+            border: 1px solid #555;
             background-color: #2a2a2a;
             cursor: pointer;
             transition: all 0.2s;
+            accent-color: #d97757;
         }
 
-        input[type="checkbox"]:checked {
-            background-color: #d97757;
-            border-color: #d97757;
-        }
-
-        input[type="checkbox"]:hover {
-            border-color: #d97757;
-        }
-
-        .link-login {
-            color: #9ca3af;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.875rem;
-            text-align: center;
-            display: block;
-            margin-top: 1.5rem;
-        }
-
-        .link-login:hover {
-            color: #d97757;
-        }
-
-        .link-login span {
-            color: #d97757;
-            font-weight: 600;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 640px) {
-            .form-card {
-                padding: 2rem 1.5rem;
-                max-width: 100%;
-                margin: 1rem;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            }
-
-            .claude-title {
-                font-size: 1.5rem;
-            }
-
-            .claude-button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .button-container {
-                width: 100%;
-            }
-
-            .flex.items-center.justify-between {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-
-            .link-forgot {
-                margin-bottom: 0.5rem;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .form-card {
-                padding: 1.5rem 1rem;
-            }
-
-            .claude-input {
-                padding: 0.75rem 0.875rem;
-                font-size: 0.875rem;
-            }
-
-            .bg-orb {
-                display: none;
-            }
-        }
-
-        /* Icon Animation */
-        .claude-button i {
-            transition: transform 0.3s;
-        }
-
-        .claude-button:hover i {
-            transform: translateX(3px);
-        }
-
-        /* Logo Styling */
         .logo-image {
-            max-width: 80px; /* Ukuran maksimal logo */
+            max-width: 80px;
             height: auto;
-            margin: 0 auto 1rem; /* Posisi di tengah dan margin bawah */
+            margin: 0 auto 1rem;
             display: block;
         }
     </style>
 </head>
 
 <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
-    <div class="bg-orb orb-3"></div>
-
+    <div class="video-background">
+        <div class="video-foreground">
+            <iframe 
+                src="https://www.youtube.com/embed/bRNlrdfKNd4?controls=0&autoplay=1&mute=1&playsinline=1&loop=1&playlist=bRNlrdfKNd4&showinfo=0&rel=0&iv_load_policy=3&disablekb=1" 
+                frameborder="0" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+    <div class="video-overlay"></div>
     <div class="form-card">
         <div class="text-center mb-8 logo-container">
             <img src="/images/Magnet.png" alt="Logo BPS Bantul" class="logo-image">
@@ -433,10 +278,10 @@
 
         <div class="relative my-6" style="animation: fadeIn 0.6s ease-out 0.8s both;">
             <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                <div class="w-full border-t border-gray-700"></div>
+                <div class="w-full border-t border-gray-600"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-                <span class="px-2 bg-[#2a2a2a] text-gray-400">Pendaftar Harus Login Dengan Google</span>
+                <span class="px-2 bg-transparent text-gray-300" style="background-color: #2a2a2a; border-radius: 4px;">Pendaftar Harus Login Dengan Google</span>
             </div>
         </div>
 

@@ -5,86 +5,63 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/Magnet.png') }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'MagNet') }}</title>
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-    <!-- Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+          integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- Anti-Flicker Script -->
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <script>
         if (localStorage.getItem('_x_expanded') === 'false') {
             document.documentElement.classList.add('sidebar-collapsed-on-load');
         }
     </script>
 
-    <!-- Scripts Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Anti-Flicker Style -->
-    <style>
-        @media (min-width: 1024px) {
-            html.sidebar-collapsed-on-load aside {
-                width: 5rem !important; /* w-20 */
-            }
-            html.sidebar-collapsed-on-load main[class*="lg:ml-"],
-            html.sidebar-collapsed-on-load div[class*="lg:ml-"] {
-                margin-left: 5rem !important; /* ml-20 */
-            }
-        }
-        [x-cloak] { 
-            display: none !important; 
-        }
-    </style>
-
+    
     @stack('styles')
 </head>
 
-<body class="font-sans antialiased"
-    x-data="{ expanded: JSON.parse(localStorage.getItem('_x_expanded') ?? 'true'), mobileOpen: false }"
-    x-init="document.documentElement.classList.remove('sidebar-collapsed-on-load')"
-    :class="{ 'overflow-hidden': mobileOpen }">
+<body class="font-sans antialiased view-grid"
+      x-data="{ expanded: JSON.parse(localStorage.getItem('_x_expanded') ?? 'true'), mobileOpen: false }"
+      x-init="document.documentElement.classList.remove('sidebar-collapsed-on-load')"
+      :class="{ 'overflow-hidden': mobileOpen }">
 
-    {{-- ✅ HEADER KHUSUS MOBILE (LG:HIDDEN) --}}
-    {{-- Urutan diubah: Tombol dulu, baru Judul. justify-between -> justify-start gap-4 --}}
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="particle" style="top: 20%; left: 30%; animation-delay: 0s;"></div>
+    <div class="particle" style="top: 70%; left: 60%; animation-delay: 1.5s;"></div>
+    <div class="particle" style="top: 40%; left: 80%; animation-delay: 2.5s;"></div>
+
     <header x-cloak
-        class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-start gap-4 h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
-        <button @click="mobileOpen = true" class="text-gray-500 dark:text-gray-400 p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+            class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-start gap-4 h-16 px-6 bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-[#3a3a3a]">
+        <button @click="mobileOpen = true" class="text-gray-300 p-2 -ml-2 rounded-lg hover:bg-white/5 hover:text-white">
             <i class="fas fa-bars w-5 text-center"></i>
         </button>
-        <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200 claude-title">
+        <h1 class="claude-title text-xl text-white font-semibold">
             MagNet
         </h1>
     </header>
-    
-    <div class="flex min-h-screen bg-gray-100 dark:bg-gray-900">
 
+    <div class="flex min-h-screen">
         @include('layouts.sidebar')
 
-        <div class="flex-1 flex flex-col transition-all duration-500 ease-in-out pt-16 lg:pt-0"
-             :class="expanded ? 'lg:ml-64' : 'lg:ml-20'">
-
-            @isset($header)
-                <header class="bg-white dark:bg-gray-800 shadow hidden lg:block">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <main class="flex-1 p-6 sm:p-8">
-                {{ $slot }}
-            </main>
-        </div>
+        <main class="flex-1 transition-all duration-500 ease-in-out pt-16 lg:pt-0"
+              :class="expanded ? 'lg:pl-64' : 'lg:pl-20'">
+            
+            {{-- Slot untuk konten halaman --}}
+            {{ $slot }}
+            
+        </main>
     </div>
 
-    {{-- OVERLAY MENU MOBILE --}}
     <div x-cloak x-show="mobileOpen" @click="mobileOpen = false"
          x-transition:enter="transition-opacity ease-linear duration-300"
          x-transition:enter-start="opacity-0"
@@ -95,6 +72,8 @@
          class="fixed inset-0 bg-black/50 z-40 lg:hidden">
     </div>
 
+    {{-- AlpineJS di-defer agar tidak blocking render --}}
+    <script src="//unpkg.com/alpinejs" defer></script>
     @stack('scripts')
 </body>
 </html>

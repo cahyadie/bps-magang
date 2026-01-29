@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Pastikan ini HasFactory
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- Tambahkan ini
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 
 class Magang extends Model
@@ -12,7 +12,7 @@ class Magang extends Model
     use HasFactory; 
 
     protected $fillable = [
-        'user_id', // <-- TAMBAHKAN INI
+        'user_id',
         'nama',
         'email',
         'foto',
@@ -64,10 +64,6 @@ class Magang extends Model
         });
     }
 
-    /**
-     * ✅ TAMBAHKAN RELASI INI
-     * Mendapatkan user yang memiliki data magang ini.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -87,6 +83,30 @@ class Magang extends Model
         if ($this->foto) {
             return asset('storage/' . $this->foto);
         }
-        return null;
+        return null; // Bisa diganti URL default avatar jika mau
+    }
+
+    /**
+     * ✅ INI YANG HILANG SEBELUMNYA
+     * Accessor untuk $magang->status_context
+     */
+    public function getStatusContextAttribute()
+    {
+        // Default values jika status kosong/null
+        $default = [
+            'class' => 'bg-gray-500/20 text-gray-400 border border-gray-500/30', 
+            'text' => 'Tanpa Status'
+        ];
+
+        if (!$this->status) {
+            return $default;
+        }
+
+        return match ($this->status) {
+            'aktif'   => ['class' => 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30', 'text' => 'Aktif'],
+            'selesai' => ['class' => 'bg-blue-500/20 text-blue-400 border border-blue-500/30', 'text' => 'Selesai'],
+            'belum'   => ['class' => 'bg-amber-500/20 text-amber-400 border border-amber-500/30', 'text' => 'Belum Mulai'],
+            default   => $default,
+        };
     }
 }
